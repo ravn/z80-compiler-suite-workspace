@@ -1,8 +1,8 @@
 # Z80 Code Density Optimization Todo
 
-## Status: Z80IndexIV disabled for +static-stack
+## Status: Multi-load BSS spill→PUSH/POP + LIFO safety fix
 
-SDCC: 1912B | Clang: 1949B | Gap: 37B (1.9%)
+SDCC: 1912B | Clang: 1944B | Gap: 32B (1.7%)
 
 ## Completed
 
@@ -57,7 +57,7 @@ SDCC: 1912B | Clang: 1949B | Gap: 37B (1.9%)
 - [x] ~~OR (HL) / AND (HL) fusion~~ — not worth it, only 3 SDCC instances,
   clang's direct addressing is equivalent. Closed #12.
 
-- [ ] MAME boot test to verify PROM correctness
+- [x] MAME boot test to verify PROM correctness (2026-03-27, SW1711-I8.imd)
 
 - [x] Interleaved C source in clang listing (make clang_src_lis)
 
@@ -70,12 +70,26 @@ SDCC: 1912B | Clang: 1949B | Gap: 37B (1.9%)
   - `(int16_t)remaining > 0` generates RLCA/SBC/AND/OR (~42B) instead of
     JP PO/JP P pattern (~21B) that uses Z80 overflow/sign flags
   - Affects: fdc_read_data_from_current_location (+39B total, ~20B from this)
-  - Root cause: ISel doesn't emit branches on PO/PE or P/M condition codes
-    for signed 16-bit comparisons
+  - Root cause: `icmp sgt i16 X, 0` normalizes to `icmp slt i16 0, X` but
+    `isConstZero(LHS)` check was missing (only RHS checked). Fixed that, but
+    the SDCC pattern (JP PO,+2; XOR $80) requires MBB splitting which crashes
+    in branch relaxation pass. Needs careful MBB architecture — parked.
+  - Approaches tried: pseudo instruction (OOM), direct MBB split in ISel (crash
+    in branch relaxation), expandPostRAPseudo (OOM). Need to either:
+    a. Emit the MBB split in Z80LowerSelect (pre-regalloc, similar to G_SELECT)
+    b. Use a branchless algorithm that doesn't need JP PO skip
+    c. Emit as a late pseudo expanded after branch relaxation
 
-- [ ] Multi-value BSS spill across CALL (~12B, ravn/llvm-z80#20)
-  - fdc_write_full_cmd spills cmd+dh to BSS (12B) where PUSH BC (2B) suffices
-  - Single-value PUSH/POP peephole exists but multi-value deferred
+- [x] Multi-value BSS spill across CALL (ravn/llvm-z80#20) — partial: -5B
+  - Fixed LIFO safety bug: PUSH/POP depth tracking prevents stack corruption
+    when multiple spills convert in the same MBB
+  - Fixed dangling PUSH bug: flags check moved before store replacement
+  - Enabled multi-load re-PUSH: POP+PUSH after each load except last
+  - Fired: fdc_select_drive_cylinder_head (2 loads, 5B), fdc_seek (2 loads,
+    5B but gc'd — function inlined), main_relocated (1 load, 4B, pre-existing)
+  - Net new savings: 5B (1949→1944)
+  - Remaining unconverted: cross-MBB spills (wait_fdc_ready, verify_seek_result),
+    cross-register (fdc_get_result_bytes: store BC, load HL)
 
 - [ ] Investigate `clang -Weverything -c` on PROM sources
 - [ ] Experiment with HI-Tech C to see how well it does
@@ -115,3 +129,4 @@ SDCC: 1912B | Clang: 1949B | Gap: 37B (1.9%)
 | 2026-03-27 | 1912 | 2033 | 121 (6%) | OR A; LD r,0 → LD r,A peephole |
 | 2026-03-27 | 1912 | 2025 | 113 (6%) | BSS spill → PUSH/POP across CALLs |
 | 2026-03-27 | 1912 | 1949 | 37 (1.9%) | Disable Z80IndexIV for +static-stack |
+| 2026-03-27 | 1912 | 1944 | 32 (1.7%) | Multi-load BSS spill→PUSH/POP + LIFO fix |

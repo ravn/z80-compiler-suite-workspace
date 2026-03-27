@@ -111,3 +111,11 @@
 > would it make the code smaller if the init_* routines could be inlined in sdcc?
 
 > automatically investigate problems found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit
+
+> 1 (signed 16-bit comparison bloat, ravn/llvm-z80#19) — parked: MBB split crashes, needs replanning
+
+## 2026-03-27 (session 3)
+
+> #20 (multi-value BSS spill across CALL)
+
+> automatically investigate problems found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit
