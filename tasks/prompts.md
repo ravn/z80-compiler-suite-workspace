@@ -119,3 +119,11 @@
 > #20 (multi-value BSS spill across CALL)
 
 > automatically investigate problems found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit
+
+## 2026-03-28
+
+> investigate if there are any patterns that are not as concise in clang binary as in sdcc binary
+
+> investigate "Signed 16-bit > 0 comparison"
+
+> automatically investigate problems found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit

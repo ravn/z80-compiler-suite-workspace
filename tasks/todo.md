@@ -1,8 +1,8 @@
 # Z80 Code Density Optimization Todo
 
-## Status: Multi-load BSS spill→PUSH/POP + LIFO safety fix
+## Status: SGT X,0 branchless optimization — CLANG BEATS SDCC
 
-SDCC: 1912B | Clang: 1944B | Gap: 32B (1.7%)
+SDCC: 1912B | Clang: 1906B | Clang is 6B smaller (-0.3%)
 
 ## Completed
 
@@ -66,19 +66,12 @@ SDCC: 1912B | Clang: 1944B | Gap: 32B (1.7%)
 
 ## Remaining (prioritized)
 
-- [ ] Signed 16-bit comparison bloat (~20B, ravn/llvm-z80#19)
-  - `(int16_t)remaining > 0` generates RLCA/SBC/AND/OR (~42B) instead of
-    JP PO/JP P pattern (~21B) that uses Z80 overflow/sign flags
-  - Affects: fdc_read_data_from_current_location (+39B total, ~20B from this)
-  - Root cause: `icmp sgt i16 X, 0` normalizes to `icmp slt i16 0, X` but
-    `isConstZero(LHS)` check was missing (only RHS checked). Fixed that, but
-    the SDCC pattern (JP PO,+2; XOR $80) requires MBB splitting which crashes
-    in branch relaxation pass. Needs careful MBB architecture — parked.
-  - Approaches tried: pseudo instruction (OOM), direct MBB split in ISel (crash
-    in branch relaxation), expandPostRAPseudo (OOM). Need to either:
-    a. Emit the MBB split in Z80LowerSelect (pre-regalloc, similar to G_SELECT)
-    b. Use a branchless algorithm that doesn't need JP PO skip
-    c. Emit as a late pseudo expanded after branch relaxation
+- [x] Signed 16-bit comparison bloat (ravn/llvm-z80#19) — FIXED: -38B
+  - `icmp sgt i16 X, 0` (and SLE X, 0) now uses branchless algorithm:
+    non-negative mask (RLCA; SBC A,A; CPL) AND non-zero test (OR hi,lo)
+  - Fused branch: 12B (was 34B). Materialized: 14B (was 30B).
+  - Avoids the JP PO/JP P MBB split entirely — no MBB splitting needed.
+  - PROM: 1944B → 1906B (-38B). Now 6B SMALLER than SDCC (1912B).
 
 - [x] Multi-value BSS spill across CALL (ravn/llvm-z80#20) — partial: -5B
   - Fixed LIFO safety bug: PUSH/POP depth tracking prevents stack corruption
