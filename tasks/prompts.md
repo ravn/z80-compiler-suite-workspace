@@ -80,4 +80,8 @@
 
 > you are making issues in the upstream llvm project, not my clone. Never do that - only in my clone. Please move them and apologize
 
+> todo: If we know at a given time that a register (for instance a) contains a specific value, it may be faster in time and denser in code to initialize another register (including HL=0 from H=A and L=A if we know that A is 0) instead
+
+> also when considering whether a byte sequence is better than another byte sequence do not only look at the length but also the execution time. Go back in history to see if any decisions taken would be influenced by this.
+
 > in this snippet d is loaded with zero in the branch where we know that a is zero so it would be more efficient to just load d with a. (ld d,a instead of ld d,$0 when A is known zero after OR A; JR Z)

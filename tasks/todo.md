@@ -65,11 +65,19 @@ SDCC: 1912B | Clang: 2033B | Gap: 121B (6.3%)
 - [ ] Investigate `clang -Weverything -c` on PROM sources
 - [ ] Experiment with HI-Tech C to see how well it does
 
+- [ ] Known-value register copy optimization
+  - When a register holds a known value (e.g. A=0 after XOR A or OR A;JR Z),
+    use `LD r,A` (1B) instead of `LD r,#imm` (2B) to initialize other regs
+  - Extends to 16-bit: `LD H,A; LD L,A` (2B) instead of `LD HL,0` (3B)
+  - Generalizes the existing `OR A; LD r,0 → LD r,A` peephole to any known value
+  - Post-RA peephole tracking register contents through the instruction stream
+
 ## Issues filed (ravn/llvm-z80)
 - ravn/llvm-z80#15 — Loop index→pointer conversion (~90B)
 - ravn/llvm-z80#16 — PUSH/POP instead of IX-indexed spills (~40B)
 - ravn/llvm-z80#12 — OR/AND (HL) memory operand fusion (~10B)
-- ravn/llvm-z80#17 — hasFP=false regalloc bug: infinite loop in fdc_write_full_cmd (~70B blocked)
+- ravn/llvm-z80#17 — hasFP=false regalloc bug: infinite loop in fdc_write_full_cmd (FIXED)
+- ravn/llvm-z80#18 — Known-value register copy optimization
 
 ## Parked (investigated, not worth pursuing now)
 
