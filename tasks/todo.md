@@ -1,8 +1,8 @@
 # Z80 Code Density Optimization Todo
 
-## Status: hasFP=false fixed + LD r,A peephole
+## Status: hasFP=false fixed + PUSH/POP spills
 
-SDCC: 1912B | Clang: 2033B | Gap: 121B (6.3%)
+SDCC: 1912B | Clang: 2025B | Gap: 113B (5.9%)
 
 ## Completed
 
@@ -47,13 +47,15 @@ SDCC: 1912B | Clang: 2033B | Gap: 121B (6.3%)
     b. Target hook in SROA to prefer pointer-increment on register-poor targets
     c. Z80-specific MachineIR pass to detect BSS-reload+ADD+load pattern
 
-- [ ] PUSH/POP instead of IX-indexed spills across CALLs (~40B)
-  - 11 functions use IX frames, many only for cross-call temp storage
-  - IX overhead: 8B setup + 3B per store + 3B per load
-  - PUSH/POP: 0B setup + 1B push + 1B pop
-  - Example: fdc_select_drive_cylinder_head uses IX for 2 temps = 20B IX
-    overhead, would be 8B with PUSH/POP
-  - Approach: post-RA peephole or spiller change
+- [x] PUSH/POP instead of BSS spills across CALLs (-8B, 2033→2025)
+  - Post-RA peephole: LD (bss),A; CALL; LD A,(bss) → PUSH AF; CALL; POP AF
+  - Conservative: only single store/single load pairs (multi-load re-PUSH
+    caused stack interaction bugs between nested converted functions)
+  - 2 instances fired: fdc_write_full_cmd, main_relocated
+  - Multi-load pattern (fdc_seek, fdc_select: 2+ loads) deferred — needs
+    investigation of stack depth interaction when multiple callers/callees
+    are converted simultaneously
+  - GR16 variant (PUSH HL/DE/BC) also supported but no instances in PROM
 
 - [x] ~~OR (HL) / AND (HL) fusion~~ — not worth it, only 3 SDCC instances,
   clang's direct addressing is equivalent. Closed #12.
@@ -64,13 +66,6 @@ SDCC: 1912B | Clang: 2033B | Gap: 121B (6.3%)
 
 - [ ] Investigate `clang -Weverything -c` on PROM sources
 - [ ] Experiment with HI-Tech C to see how well it does
-
-- [ ] Known-value register copy optimization
-  - When a register holds a known value (e.g. A=0 after XOR A or OR A;JR Z),
-    use `LD r,A` (1B) instead of `LD r,#imm` (2B) to initialize other regs
-  - Extends to 16-bit: `LD H,A; LD L,A` (2B) instead of `LD HL,0` (3B)
-  - Generalizes the existing `OR A; LD r,0 → LD r,A` peephole to any known value
-  - Post-RA peephole tracking register contents through the instruction stream
 
 ## Issues filed (ravn/llvm-z80)
 - ravn/llvm-z80#15 — Loop index→pointer conversion (~90B)
@@ -90,6 +85,10 @@ SDCC: 1912B | Clang: 2033B | Gap: 121B (6.3%)
   The comparisons themselves are i8, but the loop counter and pointer
   arithmetic are i16 because of index-based GEP.
 
+- [x] Known-value register copy / duplicate LD rr,imm (ravn/llvm-z80#18)
+  - 0 instances in current PROM (eliminated by hasFP=false + direct addressing)
+  - Revisit when working on rcbios-in-c (priority 2 test case)
+
 ## Metrics
 
 | Date | SDCC | Clang | Gap | Change |
@@ -99,3 +98,4 @@ SDCC: 1912B | Clang: 2033B | Gap: 121B (6.3%)
 | 2026-03-27 | 1912 | 2106 | 194 (10%) | Narrow i16 cmp through zext/sext |
 | 2026-03-27 | 1912 | 2034 | 122 (6%) | hasFP=false: IX constant prop loop fix |
 | 2026-03-27 | 1912 | 2033 | 121 (6%) | OR A; LD r,0 → LD r,A peephole |
+| 2026-03-27 | 1912 | 2025 | 113 (6%) | BSS spill → PUSH/POP across CALLs |

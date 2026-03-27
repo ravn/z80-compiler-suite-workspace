@@ -84,4 +84,10 @@
 
 > also when considering whether a byte sequence is better than another byte sequence do not only look at the length but also the execution time. Go back in history to see if any decisions taken would be influenced by this.
 
+> 5 (duplicate LD rr,imm peephole)
+
+> park it for now - it may be applicable when looking at the bios
+
+> 2 (PUSH/POP instead of IX-indexed spills)
+
 > in this snippet d is loaded with zero in the branch where we know that a is zero so it would be more efficient to just load d with a. (ld d,a instead of ld d,$0 when A is known zero after OR A; JR Z)
