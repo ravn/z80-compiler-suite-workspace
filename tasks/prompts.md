@@ -54,6 +54,8 @@
 
 > investigate what "clang -Weverything -c ..." can tell me
 
+> fact: You don't need to care about long sessions. I would like to know though when it is a good time to clear up context and start a new session
+
 > a lot of work has happened on llvm-z80 upstream and i cannot merge. Please investigate what has happened, and make a plan for bringing my fork up to date with the latest
 
 > please build arm64 docker image for version 2.4
@@ -63,3 +65,19 @@
 > the prom should build with the newly build docker image
 
 > changes z88dk docker build from latest to v2.4
+
+## 2026-03-27
+
+> start #14
+
+> can you automate this test fully so I do not need to confirm until you have reached a conclusion?
+
+> you may use a debugger and the mame gdbstub to look inside if needed
+
+> it may be that two interrupt routines are firing at the same time?
+
+> todo later: Experiment with HITech C to see how well it does.
+
+> you are making issues in the upstream llvm project, not my clone. Never do that - only in my clone. Please move them and apologize
+
+> in this snippet d is loaded with zero in the branch where we know that a is zero so it would be more efficient to just load d with a. (ld d,a instead of ld d,$0 when A is known zero after OR A; JR Z)

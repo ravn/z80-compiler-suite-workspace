@@ -1,8 +1,8 @@
 # Z80 Code Density Optimization Todo
 
-## Status: Phases 1+narrowing complete
+## Status: hasFP=false fixed + LD r,A peephole
 
-SDCC: 1912B | Clang: 2106B | Gap: 194B (10%)
+SDCC: 1912B | Clang: 2033B | Gap: 121B (6.3%)
 
 ## Completed
 
@@ -17,24 +17,21 @@ SDCC: 1912B | Clang: 2106B | Gap: 194B (10%)
   - Applied in both materialized G_ICMP and fused compare-and-branch
   - All 40 lit tests pass, MAME boot PASS
 
-## Remaining (prioritized)
+- [x] **hasFP=false regalloc bug** (-72B, 2106→2034, FIXED)
+  - **Root cause:** IX constant propagation peephole in Z80LateOptimization
+    treated INC IX inside a loop body as a one-time adjustment (+1) to the
+    initial LD IX,0. Replaced `PUSH IX; POP HL` (actual counter) with
+    `LD HL,1` (constant), creating an infinite loop in `fdc_write_full_cmd`.
+  - **Bisection:** Automated binary search over 25 non-ISR functions found
+    `fdc_write_full_cmd` as the sole culprit in 6 rounds.
+  - **Fix:** Check for back-edges (loop membership) in the INC/DEC IX handler.
+    If the block containing INC/DEC IX has a successor with number <= itself,
+    mark IX as non-constant to prevent folding.
+  - **Files changed:** Z80LateOptimization.cpp (loop check), Z80FrameLowering.cpp
+    (removed staticStack guard)
+  - **Test:** ix-loop-const-prop.ll, all 41 lit tests pass, MAME boot PASS
 
-- [ ] **hasFP=false regalloc bug** (~70B savings blocked, HIGHEST PRIORITY)
-  - Saves ~70B code (2106→2036 with ISR fix) but MAME boot FAILS
-  - All results verified with banner timestamp
-  - **NOT an ISR issue.** Explicitly adding PUSH IX/POP IX to ISR
-    prologue/epilogue (and preventing peephole removal) didn't fix it.
-    The ISRs don't use IX/IY themselves — callees save them if needed.
-  - **ROOT CAUSE: regalloc instability.** With IX allocatable (hasFP=false),
-    the register allocator makes different decisions. In
-    `_fdc_read_data_from_current_location`, the comparison result is
-    moved to H register but the return value `ld a,$1` is dropped —
-    a real code generation bug.
-  - The unused-IX-removal peephole also strips PUSH IX/POP IX from ISRs
-    (fixed by checking `hasFnAttribute("interrupt")` but ISR wasn't
-    the actual failure cause).
-  - Approach: isolate which function(s) generate wrong code by compiling
-    individual functions with hasFP=true vs false and testing
+## Remaining (prioritized)
 
 - [ ] Loop index→pointer conversion (~90B, largest remaining gap)
   - Root cause: **SROA pass** (pass 2213) converts pointer increment to
@@ -66,12 +63,13 @@ SDCC: 1912B | Clang: 2106B | Gap: 194B (10%)
 - [x] Interleaved C source in clang listing (make clang_src_lis)
 
 - [ ] Investigate `clang -Weverything -c` on PROM sources
+- [ ] Experiment with HI-Tech C to see how well it does
 
-## Issues filed
-- llvm-z80/llvm-z80#10 — Loop index→pointer conversion (~90B)
-- llvm-z80/llvm-z80#11 — PUSH/POP instead of IX-indexed spills (~40B)
-- llvm-z80/llvm-z80#12 — OR/AND (HL) memory operand fusion (~10B)
-- llvm-z80/llvm-z80#14 — hasFP=false regalloc bug (~70B blocked)
+## Issues filed (ravn/llvm-z80)
+- ravn/llvm-z80#15 — Loop index→pointer conversion (~90B)
+- ravn/llvm-z80#16 — PUSH/POP instead of IX-indexed spills (~40B)
+- ravn/llvm-z80#12 — OR/AND (HL) memory operand fusion (~10B)
+- ravn/llvm-z80#17 — hasFP=false regalloc bug: infinite loop in fdc_write_full_cmd (~70B blocked)
 
 ## Parked (investigated, not worth pursuing now)
 
@@ -91,4 +89,5 @@ SDCC: 1912B | Clang: 2106B | Gap: 194B (10%)
 | 2026-03-26 | 1912 | 2352 | 440 (23%) | baseline (post-merge) |
 | 2026-03-27 | 1912 | 2118 | 206 (11%) | Phase 1: direct addressing |
 | 2026-03-27 | 1912 | 2106 | 194 (10%) | Narrow i16 cmp through zext/sext |
-| 2026-03-27 | 1912 | 2024 | 112 (6%) | hasFP=false (blocked by runtime bug) |
+| 2026-03-27 | 1912 | 2034 | 122 (6%) | hasFP=false: IX constant prop loop fix |
+| 2026-03-27 | 1912 | 2033 | 121 (6%) | OR A; LD r,0 → LD r,A peephole |
