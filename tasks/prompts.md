@@ -90,4 +90,24 @@
 
 > 2 (PUSH/POP instead of IX-indexed spills)
 
+> clear context and start #1 (loop index→pointer conversion)
+
 > in this snippet d is loaded with zero in the branch where we know that a is zero so it would be more efficient to just load d with a. (ld d,a instead of ld d,$0 when A is known zero after OR A; JR Z)
+
+> #1
+
+## 2026-03-27 (session 2)
+
+> #1 (loop index→pointer conversion)
+
+> make the simple solution
+
+> please boot mame and let me test
+
+> please boot mame with a polypascal disk and let me test
+
+> fine, all seems ok
+
+> would it make the code smaller if the init_* routines could be inlined in sdcc?
+
+> automatically investigate problems found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit

@@ -1,8 +1,8 @@
 # Z80 Code Density Optimization Todo
 
-## Status: hasFP=false fixed + PUSH/POP spills
+## Status: Z80IndexIV disabled for +static-stack
 
-SDCC: 1912B | Clang: 2025B | Gap: 113B (5.9%)
+SDCC: 1912B | Clang: 1949B | Gap: 37B (1.9%)
 
 ## Completed
 
@@ -33,19 +33,16 @@ SDCC: 1912B | Clang: 2025B | Gap: 113B (5.9%)
 
 ## Remaining (prioritized)
 
-- [ ] Loop index→pointer conversion (~90B, largest remaining gap)
-  - Root cause: **SROA pass** (pass 2213) converts pointer increment to
-    base+index GEP when promoting alloca'd pointers to SSA.
-    Frontend at -Os without LLVM opts: `getelementptr ptr %ap, i16 1` (correct)
-    After SROA: `getelementptr ptr %base, i16 %index` (recomputes every iteration)
-  - On Z80, pointer increment (INC HL, 1B) is far cheaper than
-    recompute from base+index (LD HL,(bss); ADD HL,BC = 7B+)
-  - Affects: compare_6bytes (+42B), check_sysfile (+49B),
-    fdc_write_full_cmd (+36B loop)
-  - Approaches:
-    a. Post-SROA pass to convert index-based GEP back to pointer-increment
-    b. Target hook in SROA to prefer pointer-increment on register-poor targets
-    c. Z80-specific MachineIR pass to detect BSS-reload+ADD+load pattern
+- [x] Loop index→pointer conversion (-76B, 2025→1949)
+  - Root cause was **Z80IndexIV pass**, not SROA. The pass converted
+    pointer-increment GEPs (`gep ptr, 1` → INC HL, 1B) into base+index
+    GEPs (`gep base, index` → LD HL,base; ADD HL,BC, 4+B).
+  - Fix: skip Z80IndexIV when +static-stack is active (locals in BSS,
+    not IX-relative, so IX+d indexed addressing has no benefit).
+  - TODO: investigate whether Z80IndexIV helps non-static-stack code
+    where IX+d indexed addressing is available.
+  - Files changed: Z80IndexIV.cpp (static-stack guard)
+  - All 42 lit tests pass, MAME boot PASS
 
 - [x] PUSH/POP instead of BSS spills across CALLs (-8B, 2033→2025)
   - Post-RA peephole: LD (bss),A; CALL; LD A,(bss) → PUSH AF; CALL; POP AF
@@ -67,8 +64,26 @@ SDCC: 1912B | Clang: 2025B | Gap: 113B (5.9%)
 - [ ] Investigate `clang -Weverything -c` on PROM sources
 - [ ] Experiment with HI-Tech C to see how well it does
 
+## Remaining (prioritized)
+
+- [ ] Signed 16-bit comparison bloat (~20B, ravn/llvm-z80#19)
+  - `(int16_t)remaining > 0` generates RLCA/SBC/AND/OR (~42B) instead of
+    JP PO/JP P pattern (~21B) that uses Z80 overflow/sign flags
+  - Affects: fdc_read_data_from_current_location (+39B total, ~20B from this)
+  - Root cause: ISel doesn't emit branches on PO/PE or P/M condition codes
+    for signed 16-bit comparisons
+
+- [ ] Multi-value BSS spill across CALL (~12B, ravn/llvm-z80#20)
+  - fdc_write_full_cmd spills cmd+dh to BSS (12B) where PUSH BC (2B) suffices
+  - Single-value PUSH/POP peephole exists but multi-value deferred
+
+- [ ] Investigate `clang -Weverything -c` on PROM sources
+- [ ] Experiment with HI-Tech C to see how well it does
+
 ## Issues filed (ravn/llvm-z80)
-- ravn/llvm-z80#15 — Loop index→pointer conversion (~90B)
+- ravn/llvm-z80#19 — Signed 16-bit comparison bloat (~20B)
+- ravn/llvm-z80#20 — Multi-value BSS spill across CALL (~12B)
+- ravn/llvm-z80#15 — Loop index→pointer conversion (~90B) — FIXED (Z80IndexIV disabled)
 - ravn/llvm-z80#16 — PUSH/POP instead of IX-indexed spills (~40B)
 - ravn/llvm-z80#12 — OR/AND (HL) memory operand fusion (~10B)
 - ravn/llvm-z80#17 — hasFP=false regalloc bug: infinite loop in fdc_write_full_cmd (FIXED)
@@ -99,3 +114,4 @@ SDCC: 1912B | Clang: 2025B | Gap: 113B (5.9%)
 | 2026-03-27 | 1912 | 2034 | 122 (6%) | hasFP=false: IX constant prop loop fix |
 | 2026-03-27 | 1912 | 2033 | 121 (6%) | OR A; LD r,0 → LD r,A peephole |
 | 2026-03-27 | 1912 | 2025 | 113 (6%) | BSS spill → PUSH/POP across CALLs |
+| 2026-03-27 | 1912 | 1949 | 37 (1.9%) | Disable Z80IndexIV for +static-stack |
