@@ -138,7 +138,10 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 - ravn/llvm-z80#27 — Per-pair 16-bit register copy cost (structural)
 - ravn/llvm-z80#28 — O0 code generation failures in large functions
 - ravn/llvm-z80#29 — +static-stack incorrect code in large functions — **CLOSED** (SPILL_IMM8 missing A save)
-- ravn/llvm-z80#30 — Incorrect code in benchmarks: 3 bugs (static-stack spill mismatch, 32-bit codegen, string loop)
+- ravn/llvm-z80#30 — Incorrect code in benchmarks: umbrella for #31, #32, #33
+- ravn/llvm-z80#31 — Static-stack volatile spill via PUSH, reload from stale BSS
+- ravn/llvm-z80#32 — 32-bit CRC-32 produces wrong result (not static-stack specific)
+- ravn/llvm-z80#33 — bench_string infinite loop without +static-stack
 
 ## Parked (investigated, not worth pursuing now)
 

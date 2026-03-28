@@ -10,6 +10,22 @@
 
 > automatically investigate problems in session found creating tasks and issues as necesary. summarize your work and findings in the project, and commit
 
+> i have freed up space
+
+> i have stopped docker and cleaned.
+
+> i keep running out of diskspace
+
+> the docker raw diskimage under docker desktop grew to 90 gb
+
+> the z88dk image is not v2.4 but 2.4
+
+> restarted computer because docker hung
+
+> docker ready, continue
+
+> automatically investigate problems in session found creating tasks and issues as necesary. summarize your work and findings in the project, and commit
+
 ## 2026-03-28 (continued)
 
 > #22

@@ -65,6 +65,10 @@ When a volatile variable is used as both a function argument (pushed to stack) a
 
 CRC-32 with the standard polynomial 0xEDB88320 produces entirely wrong results on Z80. The low 16 bits come back as 0x00FF instead of 0x9E8B. This is not static-stack related — fails both modes. Likely a bug in 32-bit right shift, conditional XOR, or the ternary `(crc & 1 ? poly : 0)` lowering. The 0x00FF smells like a mask constant leaking into the result.
 
+## 2026-03-28: Docker platform warnings corrupt combined stdout+stderr parsing
+
+When using `subprocess.run(capture_output=True)` with Docker, the platform warning ("The requested image's platform does not match...") goes to stderr. If you combine `r.stdout + r.stderr` for parsing, the warning ends up as the last line, breaking any "last line is the T-states count" logic. Always parse `r.stdout` alone for structured output.
+
 ## 2026-03-28: Fair cross-compiler size comparison needs CRT exclusion
 
 Clang's Z80 CRT is ~28 bytes (_start to _main). z88dk's CRT is ~560 bytes. For fair code size comparison, use `__code_compiler_size` from z88dk's map file (user code only, excludes CRT) and subtract _main address from clang's llvm-size output. Runtime library functions (div, mod, mul) should be INCLUDED since both compilers link them based on user code needs.
