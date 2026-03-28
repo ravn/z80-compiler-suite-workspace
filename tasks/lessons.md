@@ -57,6 +57,14 @@ When `eliminateFrameIndex` processes SPILL/RELOAD pseudos left-to-right, the `is
 
 Never use `-trace` flag with z88dk-ticks for programs that run more than ~100K instructions. The trace output is one line per instruction and can generate terabytes for pi computations or other long-running code. Use `-trace` only with `-end` on short-running tests.
 
+## 2026-03-28: Static-stack volatile spill can use PUSH but reload from BSS
+
+When a volatile variable is used as both a function argument (pushed to stack) and a divisor (loaded into DE), the static-stack code path may push the value but never store it to the BSS slot. A later reload from the BSS slot gets a stale value. The IX-indexed (non-static-stack) path works because spill/reload goes through the same stack frame location. This is a different mechanism from #29 (A register clobbering) — it's a missing store in the spill path.
+
+## 2026-03-28: 32-bit CRC codegen produces wrong results
+
+CRC-32 with the standard polynomial 0xEDB88320 produces entirely wrong results on Z80. The low 16 bits come back as 0x00FF instead of 0x9E8B. This is not static-stack related — fails both modes. Likely a bug in 32-bit right shift, conditional XOR, or the ternary `(crc & 1 ? poly : 0)` lowering. The 0x00FF smells like a mask constant leaking into the result.
+
 ## 2026-03-28: Fair cross-compiler size comparison needs CRT exclusion
 
 Clang's Z80 CRT is ~28 bytes (_start to _main). z88dk's CRT is ~560 bytes. For fair code size comparison, use `__code_compiler_size` from z88dk's map file (user code only, excludes CRT) and subtract _main address from clang's llvm-size output. Runtime library functions (div, mod, mul) should be INCLUDED since both compilers link them based on user code needs.

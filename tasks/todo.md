@@ -103,11 +103,16 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
   - 10 benchmark programs from existing test suite
   - Results: clang wins 7/10 on size, zsdcc wins on 32/64-bit arithmetic
   - Found 4 clang correctness failures in large benchmarks (ravn/llvm-z80#30)
-  - Isolated division works; failures are interaction bugs in large functions
+  - 3 distinct bugs identified:
+    - Bug A: static-stack volatile spill/reload mismatch (PUSH vs BSS load)
+    - Bug B: 32-bit arithmetic codegen (CRC-32 produces wrong result, not static-stack specific)
+    - Bug C: infinite loop in string ops without static-stack
   - 4 zsdcc correctness failures too (div/mod, string ops)
   - Renamed edgecase-testing → test-gen, added --categories flag (31 cat files)
   - --full flag for including _cat_*.c files in comparison
   - Portable NOINLINE macro for cross-compiler category files
+  - Fixed compare.py: z88dk-ticks -trace now pipes through tail -20 (prevented disk fill)
+  - Fixed compare.py: z88dk:v2.4 → z88dk:2.4 tag
 
 - [ ] Investigate `clang -Weverything -c` on PROM sources
 - [ ] Experiment with HI-Tech C to see how well it does
@@ -133,7 +138,7 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 - ravn/llvm-z80#27 — Per-pair 16-bit register copy cost (structural)
 - ravn/llvm-z80#28 — O0 code generation failures in large functions
 - ravn/llvm-z80#29 — +static-stack incorrect code in large functions — **CLOSED** (SPILL_IMM8 missing A save)
-- ravn/llvm-z80#30 — Incorrect code in large benchmark functions (4/10 fail, not static-stack specific)
+- ravn/llvm-z80#30 — Incorrect code in benchmarks: 3 bugs (static-stack spill mismatch, 32-bit codegen, string loop)
 
 ## Parked (investigated, not worth pursuing now)
 
