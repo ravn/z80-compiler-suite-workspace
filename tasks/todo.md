@@ -86,10 +86,9 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 
 - [ ] Investigate `clang -Weverything -c` on PROM sources
 - [ ] Experiment with HI-Tech C to see how well it does
-- [ ] Per-pair 16-bit copy cost in register allocator (DE↔HL=1B, GR16↔GR16=2B,
-  GR16↔IX/IY=3-4B). TableGen CopyCost is per-class, not per-pair. Need custom
-  logic in getRegAllocationHints() or a cost callback. CopyCost=3 on IR16 helps
-  but doesn't eliminate the IX transfer pattern (peephole still needed).
+- [ ] Per-pair 16-bit copy cost in register allocator (ravn/llvm-z80#27)
+- [ ] Tail call blocked by PUSH in IY copy (prom1_if_present: PUSH DE; POP IY;
+  CALL __call_iy; RET — HasPush check falsely blocks, 1B)
 
 ## Issues filed (ravn/llvm-z80)
 - ravn/llvm-z80#19 — Signed 16-bit comparison bloat — **CLOSED** (branchless SGT X,0)
