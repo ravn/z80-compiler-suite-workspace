@@ -88,13 +88,19 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 - [ ] Experiment with HI-Tech C to see how well it does
 
 ## Issues filed (ravn/llvm-z80)
-- ravn/llvm-z80#19 — Signed 16-bit comparison bloat (~20B)
-- ravn/llvm-z80#20 — Multi-value BSS spill across CALL (~12B)
-- ravn/llvm-z80#15 — Loop index→pointer conversion (~90B) — FIXED (Z80IndexIV disabled)
+- ravn/llvm-z80#19 — Signed 16-bit comparison bloat — **CLOSED** (branchless SGT X,0)
+- ravn/llvm-z80#20 — BSS spill across CALL (~33B remaining: 5 functions)
+- ravn/llvm-z80#21 — Redundant 16-bit loads for port I/O — **CLOSED** (source fix + peephole)
+- ravn/llvm-z80#22 — 8→16 bit promotion in byte comparisons (~5B)
+- ravn/llvm-z80#23 — Null ISR shadow-reg overhead (~4B)
+- ravn/llvm-z80#24 — Missed RRCA/RET C conditional return (~12B)
+- ravn/llvm-z80#25 — fdc_seek inlining bloat (~21B)
+- ravn/llvm-z80#15 — Loop index→pointer conversion — FIXED (Z80IndexIV disabled)
 - ravn/llvm-z80#16 — PUSH/POP instead of IX-indexed spills (~40B)
 - ravn/llvm-z80#12 — OR/AND (HL) memory operand fusion (~10B)
-- ravn/llvm-z80#17 — hasFP=false regalloc bug: infinite loop in fdc_write_full_cmd (FIXED)
+- ravn/llvm-z80#17 — hasFP=false regalloc bug — FIXED
 - ravn/llvm-z80#18 — Known-value register copy optimization
+- ravn/llvm-z80#7 — DJNZ, LDIR, CPIR, CP (HL) (~7B from DJNZ in PROM)
 
 ## Parked (investigated, not worth pursuing now)
 
@@ -123,3 +129,5 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 | 2026-03-27 | 1912 | 2025 | 113 (6%) | BSS spill → PUSH/POP across CALLs |
 | 2026-03-27 | 1912 | 1949 | 37 (1.9%) | Disable Z80IndexIV for +static-stack |
 | 2026-03-27 | 1912 | 1944 | 32 (1.7%) | Multi-load BSS spill→PUSH/POP + LIFO fix |
+| 2026-03-28 | 1910 | 1906 | -6 (-0.3%) | Branchless SGT X,0 optimization (#19) |
+| 2026-03-28 | 1910 | 1893 | -17 (-0.9%) | DMA macro fix + high-byte peephole (#21) |

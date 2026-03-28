@@ -129,3 +129,5 @@
 > automatically investigate problems found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit
 
 > #21
+
+> automatically investigate problems found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit
