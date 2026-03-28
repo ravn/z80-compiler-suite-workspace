@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Optimize the Z80 backend of ravn/llvm-z80 (a GlobalISel-based LLVM fork) to match or beat SDCC code density. Test against RC700 PROM and BIOS sources in rc700-gensmedet.
 
-Current: Clang 1893 bytes vs SDCC 1910 bytes (-0.9%) for the autoload PROM. Clang is now smaller.
+Current: Clang 1874 bytes vs SDCC 1910 bytes (-1.9%) for the autoload PROM. Clang is now smaller.
 
 ## Workspace Layout (`/Users/ravn/z80/`)
 
