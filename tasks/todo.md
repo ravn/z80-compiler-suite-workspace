@@ -84,6 +84,15 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
   - Remaining unconverted: cross-MBB spills (wait_fdc_ready, verify_seek_result),
     cross-register (fdc_get_result_bytes: store BC, load HL)
 
+- [x] +static-stack incorrect code in large functions (ravn/llvm-z80#29) — FIXED
+  - Root cause: SPILL_IMM8 expansion in static-stack BSS mode clobbered A register
+    without saving it. The pseudo has no implicit-def of A (correct for IX-indexed
+    LD (IX+d),n expansion), but the BSS path uses LD A,imm; LD (addr),A.
+  - Fix: check isRegLiveAt(A) and PUSH AF/POP AF when A is live, matching SPILL_GR8.
+  - File: Z80RegisterInfo.cpp (eliminateFrameIndex, static-stack SPILL_IMM8 handler)
+  - Edge-case tests: 25/25 pass (was 14/25), all 43 lit tests pass
+  - Also expanded test generator with 4 inline test categories (31 total)
+
 - [ ] Investigate `clang -Weverything -c` on PROM sources
 - [ ] Experiment with HI-Tech C to see how well it does
 - [ ] Per-pair 16-bit copy cost in register allocator (ravn/llvm-z80#27)
@@ -107,7 +116,7 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 - ravn/llvm-z80#7 — DJNZ, LDIR, CPIR, CP (HL) (~7B from DJNZ in PROM)
 - ravn/llvm-z80#27 — Per-pair 16-bit register copy cost (structural)
 - ravn/llvm-z80#28 — O0 code generation failures in large functions
-- ravn/llvm-z80#29 — **+static-stack incorrect code in large functions** (11/25 Os failures)
+- ravn/llvm-z80#29 — +static-stack incorrect code in large functions — **CLOSED** (SPILL_IMM8 missing A save)
 
 ## Parked (investigated, not worth pursuing now)
 

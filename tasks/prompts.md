@@ -1,5 +1,9 @@
 # Prompts
 
+## 2026-03-28 (session 3)
+
+> #29 (+static-stack incorrect code). I would also like the test cases to both inline and not inline
+
 ## 2026-03-28 (continued)
 
 > #22
