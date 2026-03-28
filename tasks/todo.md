@@ -95,7 +95,7 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 - ravn/llvm-z80#23 — Null ISR shadow-reg overhead (~4B)
 - ravn/llvm-z80#24 — Missed RRCA/RET C conditional return (~12B)
 - ravn/llvm-z80#25 — fdc_seek inlining bloat (~21B)
-- ravn/llvm-z80#26 — IX callee-save transfer wastes bytes vs PUSH/POP (~4B/instance)
+- ravn/llvm-z80#26 — IX callee-save transfer wastes bytes vs PUSH/POP — **CLOSED** (-4B)
 - ravn/llvm-z80#15 — Loop index→pointer conversion — FIXED (Z80IndexIV disabled)
 - ravn/llvm-z80#16 — PUSH/POP instead of IX-indexed spills (~40B)
 - ravn/llvm-z80#12 — OR/AND (HL) memory operand fusion (~10B)
@@ -133,3 +133,4 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 | 2026-03-28 | 1910 | 1906 | -6 (-0.3%) | Branchless SGT X,0 optimization (#19) |
 | 2026-03-28 | 1910 | 1893 | -17 (-0.9%) | DMA macro fix + high-byte peephole (#21) |
 | 2026-03-28 | 1910 | 1874 | -36 (-1.9%) | Narrow add+cmp through zext to 8-bit (#22) |
+| 2026-03-28 | 1910 | 1870 | -40 (-2.1%) | IX callee-save transfer → PUSH/POP (#26) |
