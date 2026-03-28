@@ -6,6 +6,10 @@
 
 > i want to have a set of tests and programs that compile with several compilers and those who are either smaller or faster than llvm-z80 should be investigated thoroughly to see how it is done and if possible add this to clang, with the usual mindset of starting with the cpu and its instructions and going backwards from there. Start with setting up the framework allowing several compilers and start with z88dk zsdcc.
 
+> i want the new compiler comparison to look at the generated tests in edgecase-testing (can you suggest a better name?)
+
+> automatically investigate problems in session found creating tasks and issues as necesary. summarize your work and findings in the project, and commit
+
 ## 2026-03-28 (continued)
 
 > #22

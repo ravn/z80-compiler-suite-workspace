@@ -43,6 +43,24 @@ The hasFP=false change appears to produce identical disassembly but the PROM bin
 
 User wants: create branches for issues, create tasks/issues when planning. Record all prompts.
 
+## 2026-03-28: SPILL_IMM8 has no implicit-def of A (static-stack only)
+
+The SPILL_IMM8 pseudo is defined with no Defs in TableGen — correct for IX-indexed expansion (`LD (IX+d),n`, no A clobber) but wrong for static-stack BSS expansion (`LD A,imm; LD (addr),A`). The register allocator sees no A clobber and may place live values in A across the pseudo. Fix: check `isRegLiveAt(A)` and PUSH AF/POP AF in the BSS expansion path, matching SPILL_GR8. This fixed 11/25 edge-case test failures.
+
+Lesson: when a pseudo instruction has different expansion paths with different register clobbers, audit ALL paths against the declared Defs. The path-specific clobbers must be handled at expansion time if they're not in the pseudo's Defs.
+
+## 2026-03-28: isRegLiveAt sees unexpanded pseudos — potential hidden bugs
+
+When `eliminateFrameIndex` processes SPILL/RELOAD pseudos left-to-right, the `isRegLiveAt` scan for later instructions sees not-yet-expanded pseudos. These pseudos don't declare A as an operand (since they don't use A in their IX-indexed form), but their static-stack expansion WILL use A. This means the liveness check may undercount A usage, leading to incorrect save/restore decisions in large functions with many spills. This is the likely root cause of ravn/llvm-z80#30 (4/10 benchmark failures).
+
+## 2026-03-28: z88dk-ticks -trace fills disk on long programs
+
+Never use `-trace` flag with z88dk-ticks for programs that run more than ~100K instructions. The trace output is one line per instruction and can generate terabytes for pi computations or other long-running code. Use `-trace` only with `-end` on short-running tests.
+
+## 2026-03-28: Fair cross-compiler size comparison needs CRT exclusion
+
+Clang's Z80 CRT is ~28 bytes (_start to _main). z88dk's CRT is ~560 bytes. For fair code size comparison, use `__code_compiler_size` from z88dk's map file (user code only, excludes CRT) and subtract _main address from clang's llvm-size output. Runtime library functions (div, mod, mul) should be INCLUDED since both compilers link them based on user code needs.
+
 ## 2026-03-27: Docker build needs clang as host compiler
 
 After merging upstream LLVM, the build fails with gcc because newer LLVM uses clang-specific warning flags. Pass `-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++` to cmake, or ensure the Docker image uses clang as default cc/c++.
