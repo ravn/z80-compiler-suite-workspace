@@ -4,6 +4,8 @@
 
 > #29 (+static-stack incorrect code). I would also like the test cases to both inline and not inline
 
+> i want to have a set of tests and programs that compile with several compilers and those who are either smaller or faster than llvm-z80 should be investigated thoroughly to see how it is done and if possible add this to clang, with the usual mindset of starting with the cpu and its instructions and going backwards from there. Start with setting up the framework allowing several compilers and start with z88dk zsdcc.
+
 ## 2026-03-28 (continued)
 
 > #22

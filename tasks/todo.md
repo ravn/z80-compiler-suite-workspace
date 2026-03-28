@@ -93,6 +93,17 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
   - Edge-case tests: 25/25 pass (was 14/25), all 43 lit tests pass
   - Also expanded test generator with 4 inline test categories (31 total)
 
+- [x] Multi-compiler comparison framework (compiler-zoo)
+  - Python + Makefile framework comparing clang vs z88dk zsdcc
+  - Uses PROM flags: +static-stack, +shadow-regs, -disable-lsr (clang);
+    --allow-unsafe-read, --sdcccall 1, --max-allocs-per-node 1M (zsdcc)
+  - Fair size comparison: CRT excluded from both compilers
+  - T-states measurement via z88dk-ticks
+  - Assembly listings with debug info (clang: -g + objdump -S, zsdcc: --fverbose-asm)
+  - 10 benchmark programs from existing test suite
+  - Results: clang wins 7/10 on size, zsdcc wins on 32/64-bit arithmetic
+  - Found 4 clang correctness failures with +static-stack (further #29-class bugs)
+
 - [ ] Investigate `clang -Weverything -c` on PROM sources
 - [ ] Experiment with HI-Tech C to see how well it does
 - [ ] Per-pair 16-bit copy cost in register allocator (ravn/llvm-z80#27)
