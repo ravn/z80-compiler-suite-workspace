@@ -102,7 +102,9 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
   - Assembly listings with debug info (clang: -g + objdump -S, zsdcc: --fverbose-asm)
   - 10 benchmark programs from existing test suite
   - Results: clang wins 7/10 on size, zsdcc wins on 32/64-bit arithmetic
-  - Found 4 clang correctness failures with +static-stack (further #29-class bugs)
+  - Found 4 clang correctness failures in large benchmarks (not +static-stack specific)
+  - Isolated division works; failures are interaction bugs in large functions
+  - 4 zsdcc correctness failures too (div/mod, string ops)
 
 - [ ] Investigate `clang -Weverything -c` on PROM sources
 - [ ] Experiment with HI-Tech C to see how well it does
