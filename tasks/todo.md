@@ -1,8 +1,8 @@
 # Z80 Code Density Optimization Todo
 
-## Status: SGT X,0 branchless optimization — CLANG BEATS SDCC
+## Status: SGT X,0 fix + DMA macro + high-byte peephole — CLANG BEATS SDCC
 
-SDCC: 1912B | Clang: 1906B | Clang is 6B smaller (-0.3%)
+SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 
 ## Completed
 
