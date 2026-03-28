@@ -100,7 +100,7 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 - ravn/llvm-z80#25 — fdc_seek inlining bloat (~21B)
 - ravn/llvm-z80#26 — IX callee-save transfer wastes bytes vs PUSH/POP — **CLOSED** (-4B)
 - ravn/llvm-z80#15 — Loop index→pointer conversion — FIXED (Z80IndexIV disabled)
-- ravn/llvm-z80#16 — PUSH/POP instead of IX-indexed spills (~40B)
+- ravn/llvm-z80#16 — PUSH/POP instead of IX-indexed spills (~8B remaining, was ~40B pre-optimization)
 - ravn/llvm-z80#12 — OR/AND (HL) memory operand fusion (~10B)
 - ravn/llvm-z80#17 — hasFP=false regalloc bug — FIXED
 - ravn/llvm-z80#18 — Known-value register copy optimization
