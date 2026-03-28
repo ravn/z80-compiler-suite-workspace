@@ -105,6 +105,9 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 - ravn/llvm-z80#17 — hasFP=false regalloc bug — FIXED
 - ravn/llvm-z80#18 — Known-value register copy optimization
 - ravn/llvm-z80#7 — DJNZ, LDIR, CPIR, CP (HL) (~7B from DJNZ in PROM)
+- ravn/llvm-z80#27 — Per-pair 16-bit register copy cost (structural)
+- ravn/llvm-z80#28 — O0 code generation failures in large functions
+- ravn/llvm-z80#29 — **+static-stack incorrect code in large functions** (11/25 Os failures)
 
 ## Parked (investigated, not worth pursuing now)
 
