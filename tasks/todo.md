@@ -140,7 +140,8 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 - ravn/llvm-z80#29 — +static-stack incorrect code in large functions — **CLOSED** (SPILL_IMM8 missing A save)
 - ravn/llvm-z80#30 — Incorrect code in benchmarks: umbrella for #31, #32, #33
 - ravn/llvm-z80#31 — Static-stack volatile spill via PUSH, reload from stale BSS
-- ravn/llvm-z80#32 — 32-bit CRC-32 produces wrong result (not static-stack specific)
+- ravn/llvm-z80#32 — 32-bit CRC-32 produces wrong result — **CLOSED** (undocumented LD for IX/IY copies, +8B)
+- ravn/llvm-z80#34 — Crash: passing i32 as function argument
 - ravn/llvm-z80#33 — bench_string infinite loop without +static-stack
 
 ## Parked (investigated, not worth pursuing now)
