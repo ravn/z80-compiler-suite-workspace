@@ -185,3 +185,5 @@
 > #32 — fix it without undocumented instructions
 
 > automatically investigate problems in session found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit
+
+> look into "Bit test (`status & 0x80`) generates 8-byte XOR/CP sequence instead of `BIT 7,A` (2 bytes)".  Create a test case and verify, then fix and verify

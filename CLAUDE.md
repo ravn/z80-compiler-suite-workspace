@@ -107,5 +107,4 @@ Worst functions: `fdc_read_data` (+95B), `check_sysfile` (+59B), `lookup_sectors
 
 - `address_space(2)` crashes Legalizer (port I/O uses inline asm workaround)
 - `"hl"` inline asm constraint crashes IRTranslator
-- Bit test (`status & 0x80`) generates 8-byte XOR/CP sequence instead of `BIT 7,A` (2 bytes)
 - hasFP=false has runtime bug (parked)
