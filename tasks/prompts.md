@@ -186,12 +186,16 @@
 
 > automatically investigate problems in session found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit
 
-> look into "Bit test (`status & 0x80`) generates 8-byte XOR/CP sequence instead of `BIT 7,A` (2 bytes)".  Create a test case and verify, then fix and verify
-
-> please fix "(val & 0x80) != 0"
-
-> boot mame
-
-> please fix mame so the prom does not have a checksum → just use -skip_gameinfo flag
+> look into "Bit test" bug → already fixed, i1 edge case fixed (13B→3B)
+> fix "(val & 0x80) != 0" → ISel SLT/SGE 0 RLCA optimization
+> boot mame → verified, -skip_gameinfo for checksum warning
+> revisit issues #32/#30/#14/#33/#28 → #14 resolved (IY unreserved)
+> unreserve IY, test-gen SDCC comparison with T-states
+> z88dk-ticks I/O → TICKS.md, putchar via -iochar 1
+> CP/M experiments (branch experiment/clang-z88dk-libc):
+>   elf2rel pipeline, mandelbrot (905B fixed-point, 3555B float)
+>   z88dk stdlib, stdio.h headers, clang2z88dk.sh
+> Issues filed: #35 (no libc), #36 (va_arg), #37 (LD A,IYH), ravn/z88dk#1
+> Docker: z88dk:2.4 rebuilt natively ARM, llvm-z80-test with sdcc
 
 > automatically investigate problems in session found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit
