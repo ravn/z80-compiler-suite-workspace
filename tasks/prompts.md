@@ -22,6 +22,8 @@
 > would the "shadow-regs" have an influence on this?
 > the bug may have been introduced when I added ix and iy to registers allowed to be used
 > i have decided that the original work with enabling ix and iy as registers is incomplete, and i would like to put the current state aside as an issue and revert to not having ix and iy as registers
+> file an issue about clang needing to measure both with ix handling stack and BSS in memory when going for optimal code size (#40)
+> now that ix and iy are not considered for registers anymore, investigate the 16-bit int correctness. You should fix the generator script when done investigating
 
 ## 2026-03-28 (session 3)
 
