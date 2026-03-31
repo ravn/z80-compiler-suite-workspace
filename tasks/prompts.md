@@ -231,3 +231,5 @@
 > now investigate why decimal line number printing fails
 > i would like for the 02 and 03-optimization level tests to have as many tests as can fit - please find out for each and test
 > todo later: investigate if there are additional tests that could be added to the generator
+> investigate if #41 can be closed
+> now i want the rcbios to work with clang. please investigate and open tasks and issues as appropriate
