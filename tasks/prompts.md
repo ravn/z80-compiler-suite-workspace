@@ -1,5 +1,17 @@
 # Prompts
 
+## 2026-03-31 (session 4)
+
+> open a new branch and investigate #37
+> investigate the failures
+> does the failing test cases pass when run directly on the host with the native compiler?
+> the tests assume 16-bit ints
+> now that you have found out how to print you can convert the failure count to printing a unique line for each test. Possibly this was done originally. Then you can immediately see which test failed.
+> you should fix the generator if this works
+> why did the compilation pass if there was no implementation of putchar
+> it may be the bss overlaying issue we've seen before where multiple variables not in scope at the same time, is placed in the same memory location
+> yes (file #38)
+
 ## 2026-03-28 (session 3)
 
 > #29 (+static-stack incorrect code). I would also like the test cases to both inline and not inline

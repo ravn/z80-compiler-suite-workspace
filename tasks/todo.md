@@ -1,8 +1,8 @@
 # Z80 Code Density Optimization Todo
 
-## Status: SGT X,0 fix + DMA macro + high-byte peephole — CLANG BEATS SDCC
+## Status: +undocumented enabled, IX sub-reg fix — CLANG BEATS SDCC
 
-SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
+SDCC: 1910B | Clang: 1881B | Clang is 29B smaller (-1.5%)
 
 ## Completed
 
@@ -120,6 +120,11 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 - [ ] Tail call blocked by PUSH in IY copy (prom1_if_present: PUSH DE; POP IY;
   CALL __call_iy; RET — HasPush check falsely blocks, 1B)
 
+- [ ] Large function codegen incorrect without +undocumented (ravn/llvm-z80#38)
+  - Layout-sensitive: extra PUSH/POP for IY access shifts code, exposes latent bug
+  - Workaround: +undocumented
+  - 18/25 edge_prom tests fail at -Os, pass at -Oz and with +undocumented
+
 ## Issues filed (ravn/llvm-z80)
 - ravn/llvm-z80#19 — Signed 16-bit comparison bloat — **CLOSED** (branchless SGT X,0)
 - ravn/llvm-z80#20 — BSS spill across CALL (~33B remaining: 5 functions)
@@ -143,6 +148,9 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 - ravn/llvm-z80#32 — 32-bit CRC-32: PUSH/POP IX copies corrupt SP-relative offsets (root cause found, fix reverted)
 - ravn/llvm-z80#34 — Crash: passing i32 as function argument
 - ravn/llvm-z80#33 — bench_string infinite loop without +static-stack
+- ravn/llvm-z80#37 — Undocumented LD A,IYH emitted without +undocumented — **CLOSED** (SEXT16/SEXT_GR8/ZEXT_GR8 expansion fix)
+- ravn/llvm-z80#38 — Large function codegen incorrect without +undocumented (layout-sensitive)
+- ravn/llvm-z80#39 — IX constant propagation removes setup when +undocumented sub-reg reads present — **CLOSED** (IXH/IXL use detection fix)
 
 ## Parked (investigated, not worth pursuing now)
 
@@ -176,3 +184,5 @@ SDCC: 1910B | Clang: 1893B | Clang is 17B smaller (-0.9%)
 | 2026-03-28 | 1910 | 1874 | -36 (-1.9%) | Narrow add+cmp through zext to 8-bit (#22) |
 | 2026-03-28 | 1910 | 1870 | -40 (-2.1%) | IX callee-save transfer → PUSH/POP (#26) |
 | 2026-03-28 | 1910 | 1864 | -46 (-2.4%) | Branch-to-RET + RRCA/RLCA peepholes (#24) |
+| 2026-03-28 | 1910 | 1872 | -38 (-2.0%) | COPY16_PUSHPOP pseudo for IX/IY copies (#32) |
+| 2026-03-31 | 1910 | 1881 | -29 (-1.5%) | +undocumented enabled, IX sub-reg fix (#37/#39) |
