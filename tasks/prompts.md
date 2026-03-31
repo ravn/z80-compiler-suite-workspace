@@ -233,3 +233,7 @@
 > todo later: investigate if there are additional tests that could be added to the generator
 > investigate if #41 can be closed
 > now i want the rcbios to work with clang. please investigate and open tasks and issues as appropriate
+> to do later: Investigate if clang can be taught to get parameters in BC,DE, and/or HL and return in C with vendor specific attributes
+> (design discussion: two jump tables, all asm in bios_shims.s, minimal shared source changes)
+> linker script → bios_shims.s → hal.h → compile+link: 6373 bytes, naked stubs gc'd
+> summarize in project and commit
