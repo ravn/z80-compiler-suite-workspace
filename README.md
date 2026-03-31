@@ -2,7 +2,7 @@ This project is for experimenting with the llvm-z80 backend to see if AI (notabl
 
 Focus is on teaching llvm-z80 that the Z80 has different properties than modern CPUs and use that knowledge to allow for non-intuitive optimizations.
 
-Right now several github repositories are made available as submodules.  Three categories:
+Right now several projects are either copied in or github repositories made available as submodules.  Three categories:
 
 * Compilers:  my forks of the official images or work in progress.  If bugs are found, pull requests could be made.
 * Emulators:  Currently MAME is active but others exist.

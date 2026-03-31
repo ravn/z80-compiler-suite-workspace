@@ -47,6 +47,7 @@ add_library(z80_backend_index OBJECT EXCLUDE_FROM_ALL
     # Clang Z80 target
     ${LLVM_Z80_ROOT}/clang/lib/Basic/Targets/Z80.cpp
     ${LLVM_Z80_ROOT}/clang/lib/Basic/Targets/Z80.h
+        tinypi-2024-11-04/tinypi.c
 )
 
 # TableGen files shown in project tree but not compiled
