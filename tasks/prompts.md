@@ -240,3 +240,5 @@
 > boot in mame and let me test
 > everything looked fine
 > automatically investigate problems in session found creating tasks and issues as necesary. summarize your work and findings in the project, and commit
+> next → Makefile targets (clang_bios, clang_mame, clang_asm, clang_clean)
+> automatically investigate problems in session found creating tasks and issues as necesary. summarize your work and findings in the project, and commit
