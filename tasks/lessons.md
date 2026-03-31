@@ -73,6 +73,22 @@ When using `subprocess.run(capture_output=True)` with Docker, the platform warni
 
 Clang's Z80 CRT is ~28 bytes (_start to _main). z88dk's CRT is ~560 bytes. For fair code size comparison, use `__code_compiler_size` from z88dk's map file (user code only, excludes CRT) and subtract _main address from clang's llvm-size output. Runtime library functions (div, mod, mul) should be INCLUDED since both compilers link them based on user code needs.
 
+## 2026-03-31: MAME can take screenshots for automated boot verification
+
+Black screen = the 50 Hz ISR (isr_crt) that programs the DMA controller to feed the CRT is not firing. When boot-testing in MAME, take a screenshot and check for non-black content. If black, investigate ISR setup: IVT, CTC programming, DMA channel config, or EI.
+
+## 2026-03-31: Clang BIOS smaller than both SDCC and hand-written assembly
+
+The clang-compiled RC700 BIOS (6379B) is smaller than SDCC (6784B, -6.0%) and even the original hand-written assembly (6426B, -0.7%). This is without any Z80-specific optimization work on the BIOS — just the compiler improvements from the autoload PROM work carry over. The largest function is bios_conout_c (752B) — the CONOUT display driver with escape sequence handling.
+
+## 2026-03-31: __asm__(x) macro trick for neutralizing SDCC inline asm
+
+`#define __asm__(x) ((void)0)` as a function-like macro matches `__asm__("...")` but NOT `__asm__ volatile("...")`. This allows neutralizing SDCC-syntax inline asm in naked functions while keeping clang's own `__asm__ volatile` working in intrinsic.h. The naked functions become empty stubs, eliminated by `--gc-sections`.
+
+## 2026-03-31: address_space(2) PHI crash on conditional port I/O (ravn/llvm-z80#44)
+
+Conditional port selection (`if (flag) port_out(A); else port_out(B)`) causes the optimizer to merge address_space(2) pointers into a PHI node, crashing the Legalizer. Workaround: split into per-channel `__attribute__((noinline))` functions so port pointers never meet in a PHI.
+
 ## 2026-03-27: Docker build needs clang as host compiler
 
 After merging upstream LLVM, the build fails with gcc because newer LLVM uses clang-specific warning flags. Pass `-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++` to cmake, or ensure the Docker image uses clang as default cc/c++.

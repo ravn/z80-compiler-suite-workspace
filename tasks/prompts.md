@@ -237,3 +237,6 @@
 > (design discussion: two jump tables, all asm in bios_shims.s, minimal shared source changes)
 > linker script → bios_shims.s → hal.h → compile+link: 6373 bytes, naked stubs gc'd
 > summarize in project and commit
+> boot in mame and let me test
+> everything looked fine
+> automatically investigate problems in session found creating tasks and issues as necesary. summarize your work and findings in the project, and commit
