@@ -1,8 +1,8 @@
 # Z80 Code Density Optimization Todo
 
-## Status: +undocumented enabled, IX sub-reg fix — CLANG BEATS SDCC
+## Status: +undocumented enabled, IX sub-reg const-prop — CLANG BEATS SDCC
 
-SDCC: 1910B | Clang: 1881B | Clang is 29B smaller (-1.5%)
+SDCC: 1910B | Clang: 1876B | Clang is 34B smaller (-1.8%)
 
 ## Completed
 
@@ -185,4 +185,4 @@ SDCC: 1910B | Clang: 1881B | Clang is 29B smaller (-1.5%)
 | 2026-03-28 | 1910 | 1870 | -40 (-2.1%) | IX callee-save transfer → PUSH/POP (#26) |
 | 2026-03-28 | 1910 | 1864 | -46 (-2.4%) | Branch-to-RET + RRCA/RLCA peepholes (#24) |
 | 2026-03-28 | 1910 | 1872 | -38 (-2.0%) | COPY16_PUSHPOP pseudo for IX/IY copies (#32) |
-| 2026-03-31 | 1910 | 1881 | -29 (-1.5%) | +undocumented enabled, IX sub-reg fix (#37/#39) |
+| 2026-03-31 | 1910 | 1876 | -34 (-1.8%) | +undocumented, IX sub-reg const-prop (#37/#39) |

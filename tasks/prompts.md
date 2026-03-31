@@ -11,6 +11,12 @@
 > why did the compilation pass if there was no implementation of putchar
 > it may be the bss overlaying issue we've seen before where multiple variables not in scope at the same time, is placed in the same memory location
 > yes (file #38)
+> for now use undocumented
+> fact: always check that the checksums from mame are the same as expected for the prom to test, to avoid stale builds
+> be absolutely certain it is the right prom
+> fact: Black screen in mame means the 50hz interrupt routine isn't working as expected
+> we now have a new prom size baseline
+> automatically investigate problems in session found creating tasks and issues as necessary (x2)
 
 ## 2026-03-28 (session 3)
 
