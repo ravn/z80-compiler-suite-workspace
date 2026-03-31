@@ -245,3 +245,7 @@
 > next → size optimization: BSS load forwarding in Z80LateOptimization.cpp
 > volatile fix (-45B), memcpy scroll (-39B), conout assembly analysis
 > todo later: investigate z88dk intrinsics for CP/M ABI return values (https://www.z88dk.org/wiki/doku.php?id=libnew:intrinsic)
+> todo later: investigate z88dk GDB debugging interface (https://deepwiki.com/z88dk/z88dk/7.2-gdb-debugging-interface)
+> fact: conout must be optimized for speed
+> make an issue of memmove hanging in rcbios for sdcc → rc700-gensmedet#6
+> a custom memmove for clang mapping directly to assembly could be useful

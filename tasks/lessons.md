@@ -85,6 +85,14 @@ The clang-compiled RC700 BIOS (6379B) is smaller than SDCC (6784B, -6.0%) and ev
 
 `#define __asm__(x) ((void)0)` as a function-like macro matches `__asm__("...")` but NOT `__asm__ volatile("...")`. This allows neutralizing SDCC-syntax inline asm in naked functions while keeping clang's own `__asm__ volatile` working in intrinsic.h. The naked functions become empty stubs, eliminated by `--gc-sections`.
 
+## 2026-04-01: CONOUT must be optimized for speed, not just size
+
+The display output path (scroll, cursor movement, character output) runs at 50Hz refresh rate. Speed matters more than size here. SDCC uses unrolled 16×LDI (16T/byte) vs LDIR (21T/byte) — 24% faster per scroll. The clang build should match SDCC's speed for CONOUT functions even if it costs a few extra bytes.
+
+## 2026-04-01: memmove→memcpy when copy direction is known
+
+`scroll()` copies display memory upward (src 0xF850 > dest 0xF800), so forward copy is safe. Using `memcpy` instead of `memmove` lets clang inline as LDIR (saves 39B — memmove function body eliminated by gc-sections). Always check copy direction before choosing memcpy vs memmove.
+
 ## 2026-04-01: Blanket volatile on structs kills the optimizer
 
 The WorkArea struct at 0xFFD0 was `*(volatile WorkArea *)` — every field access was volatile. Only 6 of 15 fields are ISR-modified and need volatile. The blanket volatile prevented the compiler from keeping display fields (curx, cury, etc.) in registers, causing 45B of redundant memory loads in the clang build. Fix: per-field volatile on ISR fields only. Root cause: a refactoring (2f06e78) that replaced individual `extern volatile` variables with a struct preserved the volatile on everything. Always audit volatile granularity after refactoring.
