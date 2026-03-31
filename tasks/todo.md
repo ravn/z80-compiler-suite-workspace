@@ -1,8 +1,8 @@
 # Z80 Code Density Optimization Todo
 
-## Status: +undocumented enabled, IX sub-reg const-prop — CLANG BEATS SDCC
+## Status: IX/IY reverted to reserved — CLANG BEATS SDCC
 
-SDCC: 1910B | Clang: 1876B | Clang is 34B smaller (-1.8%)
+SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 
 ## Completed
 
@@ -186,3 +186,4 @@ SDCC: 1910B | Clang: 1876B | Clang is 34B smaller (-1.8%)
 | 2026-03-28 | 1910 | 1864 | -46 (-2.4%) | Branch-to-RET + RRCA/RLCA peepholes (#24) |
 | 2026-03-28 | 1910 | 1872 | -38 (-2.0%) | COPY16_PUSHPOP pseudo for IX/IY copies (#32) |
 | 2026-03-31 | 1910 | 1876 | -34 (-1.8%) | +undocumented, IX sub-reg const-prop (#37/#39) |
+| 2026-03-31 | 1910 | 1853 | -57 (-3.0%) | Revert IX/IY allocation (#38), reserve both |

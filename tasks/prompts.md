@@ -17,6 +17,11 @@
 > fact: Black screen in mame means the 50hz interrupt routine isn't working as expected
 > we now have a new prom size baseline
 > automatically investigate problems in session found creating tasks and issues as necessary (x2)
+> Look into #38 on a new branch
+> you must also validate yourself that the test is correct
+> would the "shadow-regs" have an influence on this?
+> the bug may have been introduced when I added ix and iy to registers allowed to be used
+> i have decided that the original work with enabling ix and iy as registers is incomplete, and i would like to put the current state aside as an issue and revert to not having ix and iy as registers
 
 ## 2026-03-28 (session 3)
 
