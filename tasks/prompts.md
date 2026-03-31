@@ -224,3 +224,10 @@
 > Docker: z88dk:2.4 rebuilt natively ARM, llvm-z80-test with sdcc
 
 > automatically investigate problems in session found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit
+
+## 2026-03-31 (session 5)
+
+> fix #41
+> now investigate why decimal line number printing fails
+> i would like for the 02 and 03-optimization level tests to have as many tests as can fit - please find out for each and test
+> todo later: investigate if there are additional tests that could be added to the generator
