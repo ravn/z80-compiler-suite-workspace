@@ -242,3 +242,4 @@
 > automatically investigate problems in session found creating tasks and issues as necesary. summarize your work and findings in the project, and commit
 > next → Makefile targets (clang_bios, clang_mame, clang_asm, clang_clean)
 > automatically investigate problems in session found creating tasks and issues as necesary. summarize your work and findings in the project, and commit
+> next → size optimization: BSS load forwarding in Z80LateOptimization.cpp

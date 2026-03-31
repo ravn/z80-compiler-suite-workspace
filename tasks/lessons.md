@@ -85,6 +85,10 @@ The clang-compiled RC700 BIOS (6379B) is smaller than SDCC (6784B, -6.0%) and ev
 
 `#define __asm__(x) ((void)0)` as a function-like macro matches `__asm__("...")` but NOT `__asm__ volatile("...")`. This allows neutralizing SDCC-syntax inline asm in naked functions while keeping clang's own `__asm__ volatile` working in intrinsic.h. The naked functions become empty stubs, eliminated by `--gc-sections`.
 
+## 2026-04-01: Blanket volatile on structs kills the optimizer
+
+The WorkArea struct at 0xFFD0 was `*(volatile WorkArea *)` — every field access was volatile. Only 6 of 15 fields are ISR-modified and need volatile. The blanket volatile prevented the compiler from keeping display fields (curx, cury, etc.) in registers, causing 45B of redundant memory loads in the clang build. Fix: per-field volatile on ISR fields only. Root cause: a refactoring (2f06e78) that replaced individual `extern volatile` variables with a struct preserved the volatile on everything. Always audit volatile granularity after refactoring.
+
 ## 2026-03-31: address_space(2) PHI crash on conditional port I/O (ravn/llvm-z80#44)
 
 Conditional port selection (`if (flag) port_out(A); else port_out(B)`) causes the optimizer to merge address_space(2) pointers into a PHI node, crashing the Legalizer. Workaround: split into per-channel `__attribute__((noinline))` functions so port pointers never meet in a PHI.
