@@ -243,3 +243,5 @@
 > next → Makefile targets (clang_bios, clang_mame, clang_asm, clang_clean)
 > automatically investigate problems in session found creating tasks and issues as necesary. summarize your work and findings in the project, and commit
 > next → size optimization: BSS load forwarding in Z80LateOptimization.cpp
+> volatile fix (-45B), memcpy scroll (-39B), conout assembly analysis
+> todo later: investigate z88dk intrinsics for CP/M ABI return values (https://www.z88dk.org/wiki/doku.php?id=libnew:intrinsic)
