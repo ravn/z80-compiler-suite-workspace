@@ -249,3 +249,26 @@
 > fact: conout must be optimized for speed
 > make an issue of memmove hanging in rcbios for sdcc → rc700-gensmedet#6
 > a custom memmove for clang mapping directly to assembly could be useful
+
+## 2026-04-01 (session 7)
+
+> #45
+> yes (implement issue #45: LD (addr),rr for 16-bit stores to constant addresses)
+> todo later: add +cpmdisk and semigraphics support for rc700 to z88dk
+> (selected memmove at bios.c:1036) do a minimal memmove shim that resolves to lddr here
+> the memmove shim should be inlined → should be just three ld and a lddr
+> (selected _bss_compiler_head at boot_entry.c:60) look into why _bss_compiler_head - BIOS_BASE is not a constant resolved at link time
+> (selected ffd2 at bios_src.lis:3290) tackle it now → filed #46, fold causes R_Z80_16 overflow, deferred to linker fix
+> why is 1 better than 2? → it's not, Z80 has 16-bit address space, wrapping is always correct → linker fix (#47)
+> summarize in project and commit
+> why is this not calculated at linktime? → stale .lis file, already fixed
+> isnt this redundant? (ld de + ld (bss),de) → filed #48, BSS store/load for constant pointer locals
+> what would it take to optimize this into an otir? → inline asm workaround, filed #49 for compiler support
+> is hl the right value already for the second otir? → yes, sioa[9] contiguous with siob[11]
+> note in the issue that the compiler should know the register value after otir
+> test mame boot → PASS, CRC verified, banner RC700 CL
+> automatically investigate problems, summarize, commit
+> (selected fd0 loop) can this be a memcpy? → yes, -13B
+> is 16 a property of cfg.infd? → no, sizeof(fd0)
+> issue: LDIR is slower than unrolling into LDI commands → filed #50
+> todo later: investigate DMA controller for screen scrolling instead of CPU copy (unused DMA channel + completion interrupt as lock)

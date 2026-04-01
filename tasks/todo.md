@@ -187,3 +187,41 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 | 2026-03-28 | 1910 | 1872 | -38 (-2.0%) | COPY16_PUSHPOP pseudo for IX/IY copies (#32) |
 | 2026-03-31 | 1910 | 1876 | -34 (-1.8%) | +undocumented, IX sub-reg const-prop (#37/#39) |
 | 2026-03-31 | 1910 | 1853 | -57 (-3.0%) | Revert IX/IY allocation (#38), reserve both |
+| 2026-04-01 | 1910 | 1842 | -68 (-3.6%) | #45 const-addr LD, #46 ptrtoint fold, #47 linker wrap |
+
+## Todo: DMA-assisted screen scrolling
+
+Investigate using Am9517A memory-to-memory DMA for CONOUT screen scroll instead of CPU LDIR/LDI.
+
+- Screen scrolling (delete_line) is the #1 CPU consumer in CONOUT (12.4% of samples)
+- Am9517A memory-to-memory uses ch0 (read/source) + ch1 (write/dest) together — hardwired, can't pick other pairs
+- Current DMA channel assignments (from BIOS source): ch0=HD, ch1=floppy, ch3=CRT refresh, ch2=unclear
+- Investigate if floppy DMA can be moved from ch1 to ch2 to free ch0+ch1 for memory-to-memory transfers
+- DREQ line routing is a PCB question — check if FDC DREQ is wired to ch1 only or configurable
+
+**Am9517A/8237 memory-to-memory transfer:**
+- Command register bit 0 = 1: enable memory-to-memory mode
+- Command register bit 1: channel 0 address hold (1 = fixed source address = block fill mode)
+- Command register bit 3: compressed timing (1 = 2 clocks/cycle, 0 = 4 clocks/cycle)
+- Ch0 current address = source, ch1 current address = destination
+- Ch0 word count controls transfer length (terminates when count reaches 0)
+- Transfer: read byte from ch0 address → internal temp register → write to ch1 address
+- Software request on ch0 initiates the transfer (request register)
+- Block fill: set bit 1, load ch0 with address of fill byte (held constant), ch1 with dest range
+- Rate: up to 1.6 MB/s with compressed timing
+
+**Documentation:**
+- Am9517A (jbox.dk, scanned PDF): https://www.jbox.dk/rc702/hardware/intel-8237.pdf
+- 8237 overview with register bits: https://8051-microcontrollers.blogspot.com/2015/08/direct-memory-access-and-dma-controlled_11.html
+- Wikipedia: https://en.wikipedia.org/wiki/Intel_8237
+- RC702 hardware reference: `RC702_HARDWARE_TECHNICAL_REFERENCE.md` in rc700-gensmedet
+
+## Todo: z88dk
+
+- Add +cpmdisk support for RC700 to z88dk
+- Add semigraphics character rendering support for RC700 to z88dk
+
+## Todo: CONOUT speed
+
+- #50: Unroll LDIR into LDI chains for speed-critical memcpy (Duff's device pattern, 24% faster)
+- DMA-assisted scroll (see above)
