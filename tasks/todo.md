@@ -263,3 +263,16 @@ Clang 5746B vs SDCC 5577B (+169B, +3.0%). Investigate thoroughly:
   instruction selection, peephole, calling convention, etc.)
 - File individual issues in ravn/llvm-z80 for each addressable gap
 - Priority: largest gaps first (likely bios_conout_c, fdc_read_data)
+
+## Todo: CLion debugger via MAME gdbstub
+
+Set up CLion to debug the BIOS live via MAME's gdbstub:
+- MAME launches with `-debug -debugger gdbstub -debugger_port 23946`
+- CLion connects as a "Remote GDB Server" run configuration
+- CLion uses clang/bios.elf (with -g debug info) as the symbol file
+- Source view defaults to clang Z80 backend view of the shared sources
+- Provide CMakeLists.txt or .run.xml configuration files in the project
+- Simple instructions in README or CLANG_PORT.md: "click Run → Debug"
+- Investigate: does GDB Z80 target exist? May need custom GDB or LLDB
+- Investigate: MAME gdbstub protocol — does it support Z80 registers?
+- Fallback: MAME's built-in debugger with `-debugscript` for breakpoints
