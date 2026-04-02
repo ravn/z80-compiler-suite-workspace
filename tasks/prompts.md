@@ -307,3 +307,17 @@
 - Base Z80 compiler (pre-fork) produces correct BIOS code
 - Without +static-stack: BIOS 6617B (+908B), works correctly
 - memcpy_z80 no longer blocked by #51 — boots with banner at 5742B
+
+### Build system refactor
+- Rename clang_z80/ to clang/, create sdcc/ folder
+- COMPILER?=clang variable selects which compiler builds bios.cim
+- Sub-Makefiles handle build rules (Docker mounts parent as workdir)
+- SDCC build via z88dk:2.4 Docker image
+- Fixed SDCC compatibility: guarded clang asm, lddr_copy
+- Common sentinel check: verify_relocation() called from coldboot()
+- Both compilers verified: clang 5746B, SDCC 5577B, both MAME boot
+
+### MAME ROM warning
+- Disabled show_warnings in ui.cpp (CRC changes every build)
+- ROM definitions keep original hashes for documentation
+- ROM size set to 0x1000 (4KB 2732 EPROM)
