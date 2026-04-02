@@ -115,6 +115,11 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
   - Fixed compare.py: z88dk:v2.4 → z88dk:2.4 tag
 
 - [ ] Build llvm-z80 clang natively on macOS (eliminate Docker for compilation)
+- [ ] Clang PROM missing NMI handler (RETN) at 0x0066 — SDCC has it in boot_rom.c
+- [ ] PROM delay() should take milliseconds, converted to instruction count per compiler
+- [ ] Investigate how much code can be shared between autoload PROM and BIOS
+- [ ] Investigate if compare_6bytes could use CPI for more compact codegen
+- [ ] Legacy boot reads to INTVEC_ADDR (0x7000) — assumes exactly 0x7000 bytes from disk. May be a latent bug if disk content differs
 - [ ] Investigate `clang -Weverything -c` on PROM sources
 - [ ] Experiment with HI-Tech C to see how well it does
 - [ ] Per-pair 16-bit copy cost in register allocator (ravn/llvm-z80#27)
