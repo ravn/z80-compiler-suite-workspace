@@ -343,3 +343,24 @@ Investigate:
 - Note: DMA channel assignments (DMA_CH_*) affect which DREQ/DACK lines
   connect to which peripheral in MAME — this is separate from port addresses
   but also needs to stay in sync
+
+## Todo: 26th status line via DMA split
+
+Investigate using the ch2/ch3 DMA split to display a 26th status line
+sourced from a separate memory region, without the 8275's 25-row limit:
+
+- The 8275 CRT controller can be programmed for 26 rows instead of 25
+- The DMA split (ch2 tail, ch3 head) could point ch3 at a status buffer
+  located outside the 2000-byte display area at 0xF800
+- The status line buffer must NOT overlap with the work area (0xFFD0+)
+  or BSS variables
+- Possible location: below display memory (e.g. 0xF750, 80 bytes)
+  or in a gap between BIOS BSS end and the display buffer
+- Content: drive letter, user number, current track, free space, etc.
+- The circular scroll approach already uses the ch2/ch3 split — the
+  status line would be a third segment. Check if this is feasible
+  with only two DMA channels, or if the status line replaces the
+  wrap-around (meaning the scroll buffer shrinks to 1920 bytes +
+  80-byte status line = 2000 bytes, no wrap needed)
+- Alternative: use the 8275's built-in "end of screen" row with a
+  fixed DMA source address (simpler but may require 8275-specific setup)
