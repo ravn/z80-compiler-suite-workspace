@@ -438,3 +438,28 @@ Use the Z80 instruction timing table:
 For measuring actual T-states of a code path, use z88dk-ticks
 emulator with `-end` at the target address. See TICKS.md in
 z80-utils/test-gen/.
+
+## Reference: isr_crt timing analysis
+
+The CRT display refresh ISR runs at 50Hz (every 20ms). Timing from
+clang bios.lis instruction analysis:
+
+| Section | T-states | Notes |
+|---------|----------|-------|
+| CRT status read | 11T | acknowledge interrupt |
+| DMA ch2/ch3 mask | 36T | mask both channels |
+| Clear byte pointer | 15T | |
+| Ch2 addr + word count | 58T | DSPSTR=0xF800, 2000 bytes |
+| Ch3 word count | 26T | zero (no attributes) |
+| DMA ch2/ch3 unmask | 36T | enable transfer |
+| **DMA subtotal** | **~198T** | |
+| Wrapper (SP save, EXX) | ~40T | isr_crt_wrapper overhead |
+| Cursor update (if dirty) | ~60T | 3 port writes |
+| Timer/blanking logic | ~80T | clktim, screen blank |
+| **Total per invocation** | **~320-380T** | |
+| **Per second (50Hz)** | **~16,000-19,000T** | ~0.4-0.5% CPU at 4MHz |
+
+With FAST_SCROLL (circular buffer): the DMA section grows by ~40T for
+computing split addresses from SCROLLOFSET (negate, add, two address
+sets instead of one fixed). Total ~360-420T per invocation. Negligible
+difference — the ISR cost is dominated by the port I/O, not arithmetic.
