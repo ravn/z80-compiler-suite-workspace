@@ -393,3 +393,22 @@ demo feature, not used by any CP/M application.
 Estimated speedup: eliminates 1920-byte copy entirely (currently 31950T
 with memcpy_z80, would become ~100T for offset update + 80-byte memset).
 That's ~99.7% reduction in scroll CPU cost.
+
+## Todo: Build variants — compatible and fast
+
+Two BIOS variants from the same source, each in its own output directory:
+
+- `clang/` — compatible: all features (BGSTAR, memcpy scroll), drop-in
+  replacement for original BIOS, 100% feature parity
+- `clang-fast/` — optimized: circular DMA scroll, no BGSTAR, tuned for
+  interactive terminal use (editing, compiling, TYPE)
+- Same for SDCC: `sdcc/` and `sdcc-fast/`
+
+Implementation:
+- `VARIANT ?= compatible` (default) in Makefile
+- `make bios` → `clang/bios.cim` (compatible)
+- `make bios VARIANT=fast` → `clang-fast/bios.cim`
+- Fast variant adds `-DFAST_SCROLL` to CFLAGS
+- Source uses `#ifdef FAST_SCROLL` to select circular buffer vs memcpy
+- Each variant directory has its own sub-Makefile (or shared with extra flags)
+- MAME targets respect VARIANT: `make mame-maxi VARIANT=fast`
