@@ -364,3 +364,32 @@ sourced from a separate memory region, without the 8275's 25-row limit:
   80-byte status line = 2000 bytes, no wrap needed)
 - Alternative: use the 8275's built-in "end of screen" row with a
   fixed DMA source address (simpler but may require 8275-specific setup)
+
+## Todo: Circular display buffer via DMA split (zero-copy scroll)
+
+The ROA375 PROM already does this — investigate implementing it in the C BIOS:
+
+- Display buffer at DSPSTR (0xF800) is a 2000-byte circular buffer
+- SCROLLOFSET tracks where the visible screen starts (0..1999)
+- Ch2 (high priority): DMA from DSPSTR+S to end of buffer (2000-S bytes)
+- Ch3 (low priority): DMA from DSPSTR for wrap-around (S bytes)
+- Scroll up = add 80 to SCROLLOFSET (mod 2000) — no memory copy
+- The isr_crt() already reprograms ch2/ch3 every frame at 50Hz
+- Just needs to compute the split addresses from SCROLLOFSET
+
+Impact on CONOUT:
+- scroll(): set SCROLLOFSET += 80, memset new bottom row — no memcpy
+- displ(): screen[locad] must account for circular offset
+- insert_line/delete_line: need to work within circular buffer
+- clear_screen(): reset SCROLLOFSET = 0, memset entire buffer
+- cursor addressing: locad = (cury + curx + SCROLLOFSET) % 2000
+
+Prerequisite: remove BGSTAR (background semigraphics overlay) support.
+BGSTAR maintains a parallel 250-byte bitmap that shadows display memory
+and must be scrolled in sync. With a circular buffer, keeping BGSTAR
+in sync adds complexity for no practical benefit — BGSTAR is an RC702
+demo feature, not used by any CP/M application.
+
+Estimated speedup: eliminates 1920-byte copy entirely (currently 31950T
+with memcpy_z80, would become ~100T for offset update + 80-byte memset).
+That's ~99.7% reduction in scroll CPU cost.
