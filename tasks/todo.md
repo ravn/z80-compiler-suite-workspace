@@ -276,3 +276,52 @@ Set up CLion to debug the BIOS live via MAME's gdbstub:
 - Investigate: does GDB Z80 target exist? May need custom GDB or LLDB
 - Investigate: MAME gdbstub protocol — does it support Z80 registers?
 - Fallback: MAME's built-in debugger with `-debugscript` for breakpoints
+
+## Todo: MAME DMA port assignment from emulated code
+
+Currently MAME's RC702 driver hardcodes the DMA channel-to-device wiring
+(which DREQ/DACK lines connect to which peripheral). Investigate whether
+the emulated Z80 code can configure this dynamically instead:
+- Can the Am9517A DMA mode register writes in MAME's 8237 emulation be
+  observed to infer which channel is used for what?
+- Does MAME's rc702.cpp wire DREQ/DACK lines at machine config time?
+  If so, can this be made software-configurable?
+- The RC702 hardware has fixed PCB traces for DREQ routing — the software
+  can't change which peripheral triggers which DMA channel. But MAME
+  emulation doesn't need to follow this constraint.
+- Goal: allow the BIOS C code to use different channel assignments without
+  also modifying the MAME driver source.
+
+## Todo: MAME DMA port assignment from emulated code
+
+Currently MAME's RC702 driver hardcodes the DMA channel-to-device wiring
+(which DREQ/DACK lines connect to which peripheral). Investigate whether
+the emulated Z80 code can configure this dynamically instead:
+- Can the Am9517A DMA mode register writes in MAME's 8237 emulation be
+  observed to infer which channel is used for what?
+- Does MAME's rc702.cpp wire DREQ/DACK lines at machine config time?
+  If so, can this be made software-configurable?
+- The RC702 hardware has fixed PCB traces for DREQ routing — the software
+  can't change which peripheral triggers which DMA channel. But MAME
+  emulation doesn't need to follow this constraint.
+- Goal: allow the BIOS C code to use different channel assignments without
+  also modifying the MAME driver source.
+
+## Todo: Sync MAME port map with BIOS port definitions
+
+The MAME RC702 driver (`rc702.cpp`) hardcodes I/O port addresses in its
+`io_map()` function (e.g. CRT at 0x00, FDC at 0x04, DMA at 0xF0). These
+must match the `PORT_*` constants in `hal.h`. Currently they're maintained
+independently — changing a port in one place requires manually updating
+the other.
+
+Investigate:
+- Can MAME's rc702.cpp read port assignments from a shared header or
+  generated file that's also used by the BIOS build?
+- Or: generate the MAME io_map() fragment from hal.h at build time
+  (e.g. a Python script that parses #define PORT_* and emits C++ map calls)
+- Or: have the MAME driver read port assignments from the PROM binary
+  itself (a configuration table embedded in the ROM)
+- Note: DMA channel assignments (DMA_CH_*) affect which DREQ/DACK lines
+  connect to which peripheral in MAME — this is separate from port addresses
+  but also needs to stay in sync
