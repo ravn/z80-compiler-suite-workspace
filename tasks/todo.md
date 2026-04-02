@@ -412,3 +412,29 @@ Implementation:
 - Source uses `#ifdef FAST_SCROLL` to select circular buffer vs memcpy
 - Each variant directory has its own sub-Makefile (or shared with extra flags)
 - MAME targets respect VARIANT: `make mame-maxi VARIANT=fast`
+
+## Reference: Getting T-states from compiler output
+
+### SDCC (via z88dk)
+Add `-Cs"--fverbose-asm"` to ZFLAGS. This makes sdcc annotate each
+instruction with its T-state count in the `.c.asm` intermediate file.
+The `.c.asm` files are generated during compilation but may be cleaned
+by z88dk. To preserve them, add `--list` to the final link step or
+compile with `-S` to get assembly only.
+
+Example: `zcc ... -Cs"--fverbose-asm" -S bios.c -o bios.c.asm`
+
+### Clang (LLVM-Z80)
+The clang Z80 backend does not emit T-state annotations.
+Use the Z80 instruction timing table:
+- LD r,r: 4T | LD r,n: 7T | LD r,(HL): 7T | LD (HL),r: 7T
+- LD rr,nn: 10T | LD (nn),A: 13T | LD A,(nn): 13T
+- OUT (n),A: 11T | IN A,(n): 11T | OUT (C),r: 12T
+- LDIR: 21T/byte (16T last) | LDI: 16T
+- PUSH: 11T | POP: 10T | CALL: 17T | RET: 10T
+- JR: 12T (taken) / 7T (not taken) | JP: 10T
+
+### z88dk-ticks
+For measuring actual T-states of a code path, use z88dk-ticks
+emulator with `-end` at the target address. See TICKS.md in
+z80-utils/test-gen/.
