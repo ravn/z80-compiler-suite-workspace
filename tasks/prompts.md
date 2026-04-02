@@ -321,3 +321,27 @@
 - Disabled show_warnings in ui.cpp (CRC changes every build)
 - ROM definitions keep original hashes for documentation
 - ROM size set to 0x1000 (4KB 2732 EPROM)
+
+### DMA channel configuration
+- Made DMA channel assignments compile-time configurable in hal.h
+- DMA_CH_HD/FLOPPY/DISPLAY/DISATTR constants with encoding macros
+- Am9517A register values derived automatically (port addr, mode, mask)
+- Zero runtime overhead — all values constant-fold
+- Branch: feature/dma-channel-config (unmerged, ready)
+
+### DMA and CONOUT analysis
+- ROA375 PROM uses zero-copy hardware scrolling via DMA split
+  - ch2/ch3 split circular buffer: scroll = update 2-byte offset
+  - No memcpy needed — eliminates scroll CPU cost entirely
+- isr_crt timing: ~320-380T per invocation, 50Hz, ~0.4% CPU
+- MAME FDC DREQ emulation: dreq1_w hardwired in rc702.cpp
+- Memory-to-memory DMA: software request, no DREQ lines needed
+
+### Todos recorded
+- Clang vs SDCC BIOS size gap analysis
+- CLion debugger via MAME gdbstub
+- MAME DMA port/DREQ sync with BIOS defines
+- 26th status line via DMA split
+- Circular display buffer (zero-copy scroll)
+- Build variants: compatible and fast directories
+- T-states reference for compiler output
