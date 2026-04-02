@@ -463,3 +463,25 @@ With FAST_SCROLL (circular buffer): the DMA section grows by ~40T for
 computing split addresses from SCROLLOFSET (negate, add, two address
 sets instead of one fixed). Total ~360-420T per invocation. Negligible
 difference — the ISR cost is dominated by the port I/O, not arithmetic.
+
+## Todo: Make CONFI.COM settings configurable in BIOS source
+
+Currently the CONFI.COM configuration block (128 bytes at disk Track 0
+offset 0x80) controls serial port settings, cursor size/blink, keyboard
+mapping, and other hardware parameters. The BIOS copies this block to
+CFG_ADDR (0xD500) at cold boot and reads fields from there at runtime.
+
+The defaults are hardcoded in boot_confi.c as a binary blob. Make these
+human-readable and configurable:
+
+- Map the full 128-byte ConfiBlock layout (which bytes control what)
+- Define named constants/struct fields for each setting
+- SIO configuration: baud rate, data bits, parity, stop bits, handshaking
+- CRT cursor: size (underline/block), blink rate, visibility
+- Keyboard: repeat rate, click, national character set selection
+- DMA mode values for each channel
+- Any other hardware parameters controlled by CONFI.COM
+
+Goal: change a #define in the BIOS source instead of running CONFI.COM
+on the target machine. The ConfiBlock struct in bios.h already has some
+field definitions — extend it to cover all 128 bytes with documented fields.
