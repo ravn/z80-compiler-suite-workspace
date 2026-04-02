@@ -253,3 +253,13 @@ Investigate using Am9517A memory-to-memory DMA for CONOUT screen scroll instead 
   - **No longer blocked**: was blocked by #51 BSS self-clobber, now fixed
   - Ready to merge when desired
 - DMA-assisted scroll (see above)
+
+## Todo: Clang vs SDCC size gap analysis (BIOS)
+
+Clang 5746B vs SDCC 5577B (+169B, +3.0%). Investigate thoroughly:
+- Generate side-by-side function size comparison (nm output)
+- For each function where clang is larger, identify the root cause
+- Map each gap to a specific compiler construction (register allocation,
+  instruction selection, peephole, calling convention, etc.)
+- File individual issues in ravn/llvm-z80 for each addressable gap
+- Priority: largest gaps first (likely bios_conout_c, fdc_read_data)
