@@ -245,14 +245,32 @@ Investigate using Am9517A memory-to-memory DMA for CONOUT screen scroll instead 
 
 ## Todo: CONOUT speed
 
-- #50: Unroll LDIR into LDI chains for speed-critical memcpy (Duff's device pattern, 20% faster)
-  - memcpy_z80() implemented and verified: inline C with {de}/{hl}/{bc} asm constraints
-  - 16xLDI+JP PE loop, LDIR for remainder. All compile-time constants folded.
-  - Benchmarked: 20% faster for >=16B (16T/byte vs 21T/byte LDIR)
-  - BIOS scroll() converted: 5742B with memcpy_z80 (on experiment/duff-memcpy branch)
-  - **No longer blocked**: was blocked by #51 BSS self-clobber, now fixed
-  - Ready to merge when desired
-- DMA-assisted scroll (see above)
+- [x] #50: memcpy_z80 — 16xLDI Duff's device for scroll() (MERGED)
+  - 20% faster per-byte (16T vs 21T), 4.7% end-to-end on TYPE FILEX.PRN
+  - Cycle test: 170.9M → 162.8M cycles
+
+- Hardware scroll via split-DMA (from ROA375 PROM analysis):
+  The original asm PROM uses **zero-copy hardware scrolling**:
+  - Display buffer at DSPSTR (0xF800) treated as circular buffer
+  - SCROLLOFSET variable tracks where visible screen starts
+  - Ch2 (high priority): DMA from DSPSTR+S to end (2000-S bytes)
+  - Ch3 (low priority): DMA from DSPSTR for wrap-around (S bytes)
+  - 8275 CRT requests 2000 chars/frame; ch2 serves tail, ch3 serves head
+  - Scroll = update SCROLLOFSET (one word write) — no memory copy at all
+  - Requires ch2 number < ch3 number (Am9517A priority: lower ch = higher)
+  - The C BIOS currently copies 1920 bytes per scroll (memcpy_z80)
+  - Implementing this in C would eliminate scroll CPU cost entirely
+  - Complications: insert_line/delete_line need to modify the circular
+    buffer correctly; clear_screen resets offset to 0; cursor addressing
+    must account for the offset
+  - DMA channel assignments are now configurable (feature/dma-channel-config)
+
+- DMA-assisted memory-to-memory scroll (alternative approach):
+  - Am9517A memory-to-memory mode: ch0 (source) + ch1 (dest), software request
+  - No DREQ lines needed — triggered by writing to request register (port 0xF9)
+  - Would still copy memory but via DMA instead of CPU (frees CPU during copy)
+  - Requires ch0+ch1 free during scroll (no concurrent disk I/O — safe in CONOUT)
+  - Less benefit than hardware scroll but simpler to implement
 
 ## Todo: Clang vs SDCC size gap analysis (BIOS)
 
