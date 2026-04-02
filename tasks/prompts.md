@@ -272,3 +272,38 @@
 > is 16 a property of cfg.infd? → no, sizeof(fd0)
 > issue: LDIR is slower than unrolling into LDI commands → filed #50
 > todo later: investigate DMA controller for screen scrolling instead of CPU copy (unused DMA channel + completion interrupt as lock)
+
+## Session #8 (2026-04-01/02)
+
+### memcpy_z80 experiment
+- Implement Duff's device 16xLDI memcpy for scroll speed optimization
+- Pure C with inline asm `{de}`,`{hl}`,`{bc}` constraints → generates clean 16xLDI+JP PE
+- Benchmarked with z88dk-ticks: 20% faster than LDIR for >=16B
+- API: `memcpy_z80(dest, src, blocks16, remainder)` — all compile-time constants
+- Branch: experiment/duff-memcpy
+
+### Banner bug investigation (#51)
+- BIOS cold boot banner missing — never reaches display memory
+- Automated compiler bisect: broke at commit 1fa0b125 (session #7 direct addressing)
+- MAME debugger trace: `puts_p` enters but `bios_conout_c` never called for banner
+- Memory inspection: banner string at $EB32 contains 0x00 at runtime
+- Root cause: BSS self-clobber in `relocate_bios()` with +static-stack
+  - Compiler stored p+1 to BSS static, *p=0 corrupted stored pointer
+  - LDIR destination became $EB00 instead of $EB69, zeroing .rodata
+- Fix: inline asm BSS clear, sentinel word in linker script
+
+### Spill class bug (#52)
+- `-verify-regalloc` catches: SPILL_GR16 rejects Anyi16 class
+- getLargestLegalSuperClass returned Anyi16 (includes SP)
+- Fix: widen SPILL/RELOAD pseudos to Anyi16, restrict superclass to GR16
+- Lit test: spill-regclass.ll
+
+### Filed issues
+- ravn/llvm-z80#51 — Boot banner missing (BSS self-clobber) — FIXED
+- ravn/llvm-z80#52 — SPILL_GR16/RELOAD_GR16 reject Anyi16 — FIXED
+- ravn/llvm-z80#53 — +static-stack allocates trivially-constant locals to BSS
+
+### Key findings
+- Base Z80 compiler (pre-fork) produces correct BIOS code
+- Without +static-stack: BIOS 6617B (+908B), works correctly
+- memcpy_z80 no longer blocked by #51 — boots with banner at 5742B

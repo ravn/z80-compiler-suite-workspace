@@ -6,7 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Optimize the Z80 backend of ravn/llvm-z80 (a GlobalISel-based LLVM fork) to match or beat SDCC code density. Test against RC700 PROM and BIOS sources in rc700-gensmedet.
 
-Current: Clang 1842 bytes vs SDCC 1910 bytes (-3.6%) for the autoload PROM. BIOS: Clang 5699B. Clang is smaller. (IX/IY reverted to reserved — allocation was incomplete, #38.)
+Current: Clang 1842 bytes vs SDCC 1910 bytes (-3.6%) for the autoload PROM. BIOS: Clang 5709B (+10B for sentinel). Clang is smaller. (IX/IY reverted to reserved — allocation was incomplete, #38.)
+
+Fixed in session #8: boot banner missing (#51, BSS self-clobber in relocate_bios with +static-stack), SPILL_GR16 Anyi16 class mismatch (#52). memcpy_z80 (20% faster scroll) ready on experiment/duff-memcpy branch.
 
 ## Workspace Layout (`/Users/ravn/z80/`)
 

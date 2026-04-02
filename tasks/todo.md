@@ -120,10 +120,27 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 - [ ] Tail call blocked by PUSH in IY copy (prom1_if_present: PUSH DE; POP IY;
   CALL __call_iy; RET — HasPush check falsely blocks, 1B)
 
+- [x] Boot banner missing (ravn/llvm-z80#51) — **FIXED** (asm BSS clear)
+  - Root cause: +static-stack BSS self-clobber in relocate_bios()
+  - Compiler stored p+1 pointer to BSS, then *p=0 zeroed the low byte
+  - memcpy destination became $EB00 instead of $EB69, zeroing .rodata
+  - Fix: inline asm BSS clear (no compiler locals → no BSS overlap)
+  - Sentinel word (0x1842) added to linker script to catch future bugs
+  - Bisected to commit 1fa0b125 (#45 direct addressing changed codegen)
+
+- [x] SPILL_GR16/RELOAD_GR16 reject Anyi16 class (ravn/llvm-z80#52) — **FIXED**
+  - getLargestLegalSuperClass returned Anyi16 (includes SP), spill pseudos
+    only accepted GR16. Fixed by widening pseudos + restricting superclass.
+  - Lit test: spill-regclass.ll
+
+- [ ] +static-stack allocates trivially-constant locals to BSS (ravn/llvm-z80#53)
+  - All locals go to BSS regardless of register pressure
+  - SDCC only spills when needed — smarter approach
+
 - [ ] Large function codegen incorrect without +undocumented (ravn/llvm-z80#38)
-  - Layout-sensitive: extra PUSH/POP for IY access shifts code, exposes latent bug
-  - Workaround: +undocumented
-  - 18/25 edge_prom tests fail at -Os, pass at -Oz and with +undocumented
+  - Original trigger (IX/IY allocation) fixed by reserving IX/IY
+  - Banner manifestation (#51) was actually BSS self-clobber, not regalloc
+  - May still have residual issues in other large functions
 
 ## Issues filed (ravn/llvm-z80)
 - ravn/llvm-z80#19 — Signed 16-bit comparison bloat — **CLOSED** (branchless SGT X,0)
@@ -151,6 +168,9 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 - ravn/llvm-z80#37 — Undocumented LD A,IYH emitted without +undocumented — **CLOSED** (SEXT16/SEXT_GR8/ZEXT_GR8 expansion fix)
 - ravn/llvm-z80#38 — Large function codegen incorrect without +undocumented (layout-sensitive)
 - ravn/llvm-z80#39 — IX constant propagation removes setup when +undocumented sub-reg reads present — **CLOSED** (IXH/IXL use detection fix)
+- ravn/llvm-z80#51 — Boot banner missing (BSS self-clobber) — **FIXED** (asm BSS clear in boot_entry.c)
+- ravn/llvm-z80#52 — SPILL_GR16/RELOAD_GR16 reject Anyi16 — **FIXED** (widen pseudos + restrict superclass)
+- ravn/llvm-z80#53 — +static-stack allocates trivially-constant locals to BSS
 
 ## Parked (investigated, not worth pursuing now)
 
@@ -188,6 +208,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 | 2026-03-31 | 1910 | 1876 | -34 (-1.8%) | +undocumented, IX sub-reg const-prop (#37/#39) |
 | 2026-03-31 | 1910 | 1853 | -57 (-3.0%) | Revert IX/IY allocation (#38), reserve both |
 | 2026-04-01 | 1910 | 1842 | -68 (-3.6%) | #45 const-addr LD, #46 ptrtoint fold, #47 linker wrap |
+| 2026-04-02 | 1910 | 1842 | -68 (-3.6%) | Fix #51 BSS self-clobber, #52 spill class. BIOS 5709B |
 
 ## Todo: DMA-assisted screen scrolling
 
@@ -223,5 +244,11 @@ Investigate using Am9517A memory-to-memory DMA for CONOUT screen scroll instead 
 
 ## Todo: CONOUT speed
 
-- #50: Unroll LDIR into LDI chains for speed-critical memcpy (Duff's device pattern, 24% faster)
+- #50: Unroll LDIR into LDI chains for speed-critical memcpy (Duff's device pattern, 20% faster)
+  - memcpy_z80() implemented and verified: inline C with {de}/{hl}/{bc} asm constraints
+  - 16xLDI+JP PE loop, LDIR for remainder. All compile-time constants folded.
+  - Benchmarked: 20% faster for >=16B (16T/byte vs 21T/byte LDIR)
+  - BIOS scroll() converted: 5742B with memcpy_z80 (on experiment/duff-memcpy branch)
+  - **No longer blocked**: was blocked by #51 BSS self-clobber, now fixed
+  - Ready to merge when desired
 - DMA-assisted scroll (see above)
