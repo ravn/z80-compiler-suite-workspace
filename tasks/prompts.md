@@ -345,3 +345,16 @@
 - Circular display buffer (zero-copy scroll)
 - Build variants: compatible and fast directories
 - T-states reference for compiler output
+
+## Session #9 (2026-04-02)
+
+### CLion full BIOS integration
+> i want clion to fully understand the bios as is now, and then set MAME up as a deployment target with debugging
+> can clion be told to use another compiler?
+> clion needs to be told the level of c compliance enforced by zsdcc compiler compatability
+> please mark port input variables as not always returning zero to clion
+> clion flags for(;;)
+> make clion not flag Function 'isr_enter' is never used / Function 'isr_exit' is never used
+> is this intentional? cpmrbp = cpmrbp;
+> todo later: get clang to build on macos
+> automatically investigate problems in session found creating tasks and issues as necesary. summarize your work and findings in the project, and commit

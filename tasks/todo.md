@@ -114,6 +114,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
   - Fixed compare.py: z88dk-ticks -trace now pipes through tail -20 (prevented disk fill)
   - Fixed compare.py: z88dk:v2.4 → z88dk:2.4 tag
 
+- [ ] Build llvm-z80 clang natively on macOS (eliminate Docker for compilation)
 - [ ] Investigate `clang -Weverything -c` on PROM sources
 - [ ] Experiment with HI-Tech C to see how well it does
 - [ ] Per-pair 16-bit copy cost in register allocator (ravn/llvm-z80#27)
@@ -210,6 +211,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 | 2026-04-01 | 1910 | 1842 | -68 (-3.6%) | #45 const-addr LD, #46 ptrtoint fold, #47 linker wrap |
 | 2026-04-02 | 1910 | 1842 | -68 (-3.6%) | Fix #51 BSS self-clobber, #52 spill class. BIOS 5709B |
 | 2026-04-02 | 1910 | 1842 | -68 (-3.6%) | Merge memcpy_z80 scroll, BIOS 5742B. TYPE 4.7% faster |
+| 2026-04-02 | 1910 | 1842 | -68 (-3.6%) | CLion integration: __z80__ guards, MAME run configs |
 
 ## Todo: DMA-assisted screen scrolling
 
@@ -284,16 +286,19 @@ Clang 5746B vs SDCC 5577B (+169B, +3.0%). Investigate thoroughly:
 
 ## Todo: CLion debugger via MAME gdbstub
 
-Set up CLion to debug the BIOS live via MAME's gdbstub:
-- MAME launches with `-debug -debugger gdbstub -debugger_port 23946`
-- CLion connects as a "Remote GDB Server" run configuration
-- CLion uses clang/bios.elf (with -g debug info) as the symbol file
-- Source view defaults to clang Z80 backend view of the shared sources
-- Provide CMakeLists.txt or .run.xml configuration files in the project
-- Simple instructions in README or CLANG_PORT.md: "click Run → Debug"
-- Investigate: does GDB Z80 target exist? May need custom GDB or LLDB
-- Investigate: MAME gdbstub protocol — does it support Z80 registers?
-- Fallback: MAME's built-in debugger with `-debugscript` for breakpoints
+**Done (session #9):**
+- [x] CLion fully indexes BIOS via `__z80__` guards (HOST_TEST removed)
+- [x] .clangd: `-xc -std=c99 -Iclang -DMSIZE=56` + warning suppressions
+- [x] 6 persistent run configurations in .idea/runConfigurations/
+- [x] MAME GDB Stub run config (`run_mame.sh -g`)
+- [x] Port I/O stubs use volatile (CLion doesn't assume constant zero)
+- [x] bios_sources EXCLUDE_FROM_ALL (Build All doesn't try host compile)
+
+**Remaining:**
+- [ ] Build z80-elf-gdb from binutils-gdb for source-level debugging
+  - `./configure --target=z80-unknown-elf` + `make all-gdb`
+  - CLion Remote GDB Server: z80-elf-gdb + bios.elf + localhost:23946
+- [ ] Fallback: enhance gdb_trace.py with pyelftools DWARF source mapping
 
 ## Todo: MAME DMA port assignment from emulated code
 
