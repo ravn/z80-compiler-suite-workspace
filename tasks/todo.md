@@ -485,3 +485,17 @@ human-readable and configurable:
 Goal: change a #define in the BIOS source instead of running CONFI.COM
 on the target machine. The ConfiBlock struct in bios.h already has some
 field definitions — extend it to cover all 128 bytes with documented fields.
+
+## Todo: Remove unnecessary type casts in bios.c
+
+Several variables store addresses as `word` instead of proper pointer types,
+requiring casts at every use. Changing them to pointers removes casts and
+improves type safety:
+
+- `dskad` (word → byte *): DMA buffer address, flows into flp_dma_setup()
+- `dmaadr` (word → byte *): CP/M DMA address, used in memcpy for sector I/O
+- FSPA struct initializers: `(DPB *)&dpb0`, `(byte *)tran0` — align field types
+- `(byte *)&rstab` at line 315 — use proper fdc_result_block pointer
+
+Ripple: dskad/dmaadr changes affect flp_dma_setup (port writes take low/high
+bytes), memcpy calls, and hstbuf indexing. Not trivial but straightforward.
