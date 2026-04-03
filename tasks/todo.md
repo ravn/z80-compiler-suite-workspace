@@ -122,6 +122,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 - [ ] Clang PROM missing NMI handler (RETN) at 0x0066 — SDCC has it in boot_rom.c
 - [x] PROM delay() should take milliseconds — DONE: delay_ms(), z80_delay_ms() for SDCC
 - [ ] Investigate how much code can be shared between autoload PROM and BIOS
+- [ ] Investigate clang-only features (C17/C23, attributes) that could improve Z80 codegen
 - [ ] Investigate if compare_6bytes could use CPI for more compact codegen
 - [ ] Legacy boot reads to INTVEC_ADDR (0x7000) — assumes exactly 0x7000 bytes from disk. May be a latent bug if disk content differs
 - [ ] Investigate `clang -Weverything -c` on PROM sources
