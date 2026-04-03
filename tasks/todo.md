@@ -430,6 +430,14 @@ Implementation:
 - Each variant directory has its own sub-Makefile (or shared with extra flags)
 - MAME targets respect VARIANT: `make mame-maxi VARIANT=fast`
 
+## Reference: z88dk-dis
+
+Linear Z80 disassembler in z88dk Docker image. Reads `.map` files for symbol labels.
+Usage: `z88dk-dis -mz80 -o 0x0000 -x sdcc/bios.map sdcc/bios.cim`
+Limitation: no data/code distinction — disassembles everything as instructions.
+The SDCC `.lis` files and `llvm-objdump -d` for clang are better for routine analysis.
+Useful for quick spot-checks of specific address ranges in raw `.cim` binaries.
+
 ## Reference: Getting T-states from compiler output
 
 ### SDCC (via z88dk)
