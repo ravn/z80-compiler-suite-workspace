@@ -346,7 +346,33 @@
 - Build variants: compatible and fast directories
 - T-states reference for compiler output
 
-## Session #9 (2026-04-02)
+## Session #9 (2026-04-02/03)
+
+### CLion integration
+> CLion full BIOS integration, MAME run configs
+> Various CLion warnings/diagnostics fixes
+
+### Native macOS clang build
+> build clang natively on macos
+> autoload Makefile native toggle
+> -Os → -Oz (broke FDC timing → fixed via delay_ms)
+
+### delay_ms() refactor
+> delay should take milliseconds
+> look in rcbios for original timings (391ms FDC, 3ms WAITFL)
+> use z80_delay_ms() for SDCC, inline asm for clang
+> fix DELAY_T=76 → 16 (was 4.75x too slow)
+> verify with ticks (16.07T measured = 16T correct)
+> configure clock frequency (CRT_CPU_CLOCK_HZ=4000000)
+
+### Cleanup
+> remove unused files (34 files, -4373 lines)
+> move build artifacts into compiler directories
+> parallel clang/sdcc builds
+> rename COMALBOOT → LEGACYBOOT, floppy_boot → floppy_legacy_boot
+> volatile floppy_operation_completed_flag
+> .clang-format (K&R, mandatory braces)
+> top-level Makefile (make toolchain)
 
 ### CLion full BIOS integration
 > i want clion to fully understand the bios as is now, and then set MAME up as a deployment target with debugging

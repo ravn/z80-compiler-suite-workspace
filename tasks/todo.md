@@ -114,7 +114,11 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
   - Fixed compare.py: z88dk-ticks -trace now pipes through tail -20 (prevented disk fill)
   - Fixed compare.py: z88dk:v2.4 → z88dk:2.4 tag
 
-- [ ] Build llvm-z80 clang natively on macOS (eliminate Docker for compilation)
+- [x] Build llvm-z80 clang natively on macOS (eliminate Docker for compilation)
+- [ ] Get CLion remote development working for this project
+- [x] Recalibrate DELAY_T for -Oz (or make delay() timing-independent) — DONE: delay_ms() macro + DELAY_T=16
+- [ ] Build z88dk locally on macOS (eliminate Docker for SDCC builds)
+- [ ] Simplify BIOS jump table IFDEF logic (REL14/REL20/HARDDISK conditional JP entries)
 - [ ] Clang PROM missing NMI handler (RETN) at 0x0066 — SDCC has it in boot_rom.c
 - [ ] PROM delay() should take milliseconds, converted to instruction count per compiler
 - [ ] Investigate how much code can be shared between autoload PROM and BIOS
@@ -217,6 +221,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 | 2026-04-02 | 1910 | 1842 | -68 (-3.6%) | Fix #51 BSS self-clobber, #52 spill class. BIOS 5709B |
 | 2026-04-02 | 1910 | 1842 | -68 (-3.6%) | Merge memcpy_z80 scroll, BIOS 5742B. TYPE 4.7% faster |
 | 2026-04-02 | 1910 | 1842 | -68 (-3.6%) | CLion integration: __z80__ guards, MAME run configs |
+| 2026-04-03 | 1910 | 1802 | -108 (-5.7%) | Native macOS build, delay_ms(), -Oz, dead code GC |
 
 ## Todo: DMA-assisted screen scrolling
 
