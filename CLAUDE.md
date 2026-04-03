@@ -86,9 +86,31 @@ Worst functions: `fdc_read_data` (+95B), `check_sysfile` (+59B), `lookup_sectors
 - **EX DE,HL** for register swap (1 byte, but destroys both)
 - **SBC A,A** to materialize carry as 0x00/0xFF
 
+## C Language Standard
+
+Sources use **C23 features that work in both clang and z88dk zsdcc 4.5.0**.
+When refactoring, prefer these over older C99/C11 equivalents.
+
+Tested and working in both compilers:
+- `true`, `false` as keywords (no stdbool.h needed)
+- `nullptr`
+- `_Bool`, `_Static_assert`
+- `__typeof` / `typeof`
+- `0b` binary literals
+- designated initializers (`{.x = 42}`)
+- for-loop declarations (`for (int i = 0; ...)`)
+- `#embed`
+
+**NOT working in zsdcc** (do not use in shared sources):
+- `constexpr`
+- `[[attributes]]` (use `__attribute__` instead)
+- digit separators (`1'000` or `1_000`)
+- `typeof` in expressions (`typeof(x){42}`)
+
 ## Environment
 
-- Docker available, **no brew** (never use or suggest brew)
+- Docker available for SDCC, **no brew** (never use or suggest brew)
+- Native LLVM-Z80 clang at `llvm-z80/build-macos/bin/` (`make toolchain`)
 - z88dk via Docker container (do not rebuild from source)
 - CLion as IDE, command-line collaboration here
 - MAME for hardware emulation testing
