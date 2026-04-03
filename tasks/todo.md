@@ -120,7 +120,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 - [ ] Build z88dk locally on macOS (eliminate Docker for SDCC builds)
 - [ ] Simplify BIOS jump table IFDEF logic (REL14/REL20/HARDDISK conditional JP entries)
 - [ ] Clang PROM missing NMI handler (RETN) at 0x0066 — SDCC has it in boot_rom.c
-- [ ] PROM delay() should take milliseconds, converted to instruction count per compiler
+- [x] PROM delay() should take milliseconds — DONE: delay_ms(), z80_delay_ms() for SDCC
 - [ ] Investigate how much code can be shared between autoload PROM and BIOS
 - [ ] Investigate if compare_6bytes could use CPI for more compact codegen
 - [ ] Legacy boot reads to INTVEC_ADDR (0x7000) — assumes exactly 0x7000 bytes from disk. May be a latent bug if disk content differs
@@ -222,6 +222,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 | 2026-04-02 | 1910 | 1842 | -68 (-3.6%) | Merge memcpy_z80 scroll, BIOS 5742B. TYPE 4.7% faster |
 | 2026-04-02 | 1910 | 1842 | -68 (-3.6%) | CLion integration: __z80__ guards, MAME run configs |
 | 2026-04-03 | 1910 | 1802 | -108 (-5.7%) | Native macOS build, delay_ms(), -Oz, dead code GC |
+| 2026-04-03 | 1910 | 1791 | -119 (-6.2%) | Static inlining: fdc_seek, display_banner_and_start_crt |
 
 ## Todo: DMA-assisted screen scrolling
 
