@@ -390,3 +390,9 @@
 > what now?
 > investigate Clang vs SDCC BIOS gap analysis
 > i did 26 lines instead of 25 by reprogramming the crt.  please investigate https://github.com/ravn/rc702-bios
+> (26-line CRT investigation, 8275 datasheet transcription, kox.pas analysis)
+> (serial transfer to physical RC700, cable wiring, flow control)
+> i want the bios to empty the serial buffer when full before enabling it again
+> (BIOS RTS drain-to-empty: 5300→59 CTS drops per transfer)
+> (BIOS-only hex via MLOAD+BDOSCCP.COM workflow, 363 records ~24s)
+> (macOS FTDI tcdrain broken, Linux works)

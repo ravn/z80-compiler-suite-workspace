@@ -542,15 +542,20 @@ See: rcbios-in-c/tasks/26-line-status.md
 
 ## Todo: Serial transfer to physical RC700
 
+- [x] Serial transfer pipeline working (2026-04-05)
+  - Linux + pyserial + RTS/CTS + per-line flush: reliable at 38400 baud
+  - BIOS-only hex (363 records, ~24s) via MLOAD+BDOSCCP.COM workflow
+  - 16-bit checksum validator, drain-to-empty RTS flow control
+- [x] RTS flow control: drain buffer to empty before re-asserting (59 vs 5300 CTS drops)
+- [x] macOS FTDI: confirmed broken tcdrain() — use Linux for transfers
+- [ ] IOBYTE support in BIOS for remote console via serial
+- [ ] Investigate 115200 baud (SIO WR4 clock mode change)
 - [ ] Build proper FTDI↔RC700 cable (see rcbios-in-c/docs/serial_cable_wiring.md)
-  - Key: RC700 RTS (25-pin 4) → FTDI CTS (9-pin 8) for flow control
-  - Key: FTDI DTR (9-pin 4) → RC700 DCD (25-pin 8) for Auto Enables
-- [ ] Alternative: pyftdi DSR-based flow control on Linux
-  - RC700 RTS → FTDI DSR already wired in current cable
-  - Use libftdi SIO_DTR_DSR_HS mode to honor DSR as flow control
-  - Write Python sender script with pyftdi
-- [ ] Verify split checksum validator on physical RC700
+- [ ] macOS: investigate pyftdi for direct FTDI USB control (bypass kernel driver)
 
 ## Future / Fun
 
 - [ ] QR code generator using semi-graphics (block characters for Z80 terminal output)
+- [ ] Initialize custom character generator ROM (SEM702) from BIOS
+  - Character generator defined in roa375/PHE358A.MAC
+  - Some BIOS versions reprogram it at boot for custom character sets
