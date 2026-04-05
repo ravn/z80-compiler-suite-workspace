@@ -384,3 +384,9 @@
 > is this intentional? cpmrbp = cpmrbp;
 > todo later: get clang to build on macos
 > automatically investigate problems in session found creating tasks and issues as necesary. summarize your work and findings in the project, and commit
+
+## 2026-04-04 (session 10)
+
+> what now?
+> investigate Clang vs SDCC BIOS gap analysis
+> i did 26 lines instead of 25 by reprogramming the crt.  please investigate https://github.com/ravn/rc702-bios

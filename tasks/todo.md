@@ -524,3 +524,33 @@ improves type safety:
 
 Ripple: dskad/dmaadr changes affect flp_dma_setup (port writes take low/high
 bytes), memcpy calls, and hstbuf indexing. Not trivial but straightforward.
+
+## Todo: 26-line display with status line (feature/26-line-status)
+
+Plan complete. Implementation in 3 phases:
+
+- [ ] Phase 1: CRT26 flag + DMA split (ch2: 2000B display, ch3: 80B status from BSS)
+  - Modify PAR2 in bios_hw_init.c (SUB 0x3F for 26 rows)
+  - Add hal_dma_atr_addr macro to hal.h
+  - Update isr_crt: program ch3 address+wc for status buffer
+  - Add CRT26 build flag to Makefiles
+  - MAME: should work without driver changes (8275 recompute_parameters)
+- [ ] Phase 2: Status line driver (callback-based, clock display)
+- [ ] Phase 3: Interactive status line (SystemRequest key menu)
+
+See: rcbios-in-c/tasks/26-line-status.md
+
+## Todo: Serial transfer to physical RC700
+
+- [ ] Build proper FTDI↔RC700 cable (see rcbios-in-c/docs/serial_cable_wiring.md)
+  - Key: RC700 RTS (25-pin 4) → FTDI CTS (9-pin 8) for flow control
+  - Key: FTDI DTR (9-pin 4) → RC700 DCD (25-pin 8) for Auto Enables
+- [ ] Alternative: pyftdi DSR-based flow control on Linux
+  - RC700 RTS → FTDI DSR already wired in current cable
+  - Use libftdi SIO_DTR_DSR_HS mode to honor DSR as flow control
+  - Write Python sender script with pyftdi
+- [ ] Verify split checksum validator on physical RC700
+
+## Future / Fun
+
+- [ ] QR code generator using semi-graphics (block characters for Z80 terminal output)
