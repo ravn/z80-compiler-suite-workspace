@@ -41,13 +41,23 @@ All findings verified against actual bytes in the listing.
 - #57 estimated 3B, got 2B (branch flip is same size)
 - #61 estimated 4B, got 6B (OR A removal added +1B per DEC instance)
 
+## Session 12 Fixes
+
+| Issue | Title | Actual Savings | Notes |
+|-------|-------|----------------|-------|
+| #58 | JP→JR branch shortening | -4B | All JP Z/NZ/C/NC → JR; BranchRelaxation widens out-of-range |
+| #60 | Redundant LD A,reg removal | 0B | Peephole works, but all 3 PROM instances are cross-block |
+
+**Total session 12: -4B** (1771B → 1767B).
+- #58 estimated 3B, got 4B (2 infinite loops also shortened)
+- #60 estimated 4B, got 0B (all instances have branch targets creating MBB boundaries)
+
 ## Issues Not Yet Fixed
 
 | Issue | Title | Est. | Status |
 |-------|-------|------|--------|
-| #54 | Fall-through JP elimination | 6B | Design note filed — needs cross-function analysis |
-| #58 | JP→JR branch relaxation | 3B | Open |
-| #60 | Redundant LD A,reg when A unchanged | 4B | Open |
+| #54 | Fall-through JP elimination | 6B | Cross-section, needs linker-level opt |
+| #60 | Redundant LD A,reg (cross-block) | 4B | Intra-block peephole done, cross-block needed |
 | #62 | IV narrowing (counter register pair) | 4B | Open — follow-up to #59 |
 
 ## Previously Known Issues (still applicable to PROM)

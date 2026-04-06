@@ -1,5 +1,17 @@
 # Prompts
 
+## 2026-04-06 (session 12)
+
+> #60
+> #58
+> i dont want to use the docker build anymore now i have a native build
+> please rebuild the debug build
+> now what?
+> #7
+> please investigate if the conout path can be improved
+> no it was a mistake. now what?
+> automatically investigate problems in session found creating tasks and issues as necessary. summarize your work and findings in the project, and commit
+
 ## 2026-03-31 (session 4)
 
 > open a new branch and investigate #37
