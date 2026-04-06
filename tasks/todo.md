@@ -552,6 +552,12 @@ See: rcbios-in-c/tasks/26-line-status.md
 - [ ] Investigate 115200 baud (SIO WR4 clock mode change)
 - [ ] Build proper FTDI↔RC700 cable (see rcbios-in-c/docs/serial_cable_wiring.md)
 - [ ] macOS: investigate pyftdi for direct FTDI USB control (bypass kernel driver)
+- [ ] Investigate serial communication optimization (Z80 struggles with per-character interrupts at 38400)
+- [ ] Investigate switch vs if-then-else codegen for Z80 (IOBYTE dispatch adds 240B, may be reducible)
+- [ ] Investigate if a PC with traditional RS-232 serial port works with current cable
+  - The FTDI needs rtscts=True + per-line flush() on Linux
+  - A real 16550 UART handles CTS in hardware natively — may just work with crtscts
+  - Check if the mini adapter pinout is compatible with a PC DB-9 COM port
 
 ## Future / Fun
 
