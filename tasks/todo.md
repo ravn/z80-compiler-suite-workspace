@@ -185,7 +185,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 - ravn/llvm-z80#54 — Fall-through JP elimination (6B)
 - ravn/llvm-z80#55 — ADD HL,DE commutativity peephole — **CLOSED** (-6B)
 - ravn/llvm-z80#56 — Shift-left-7 strength reduction — **CLOSED** (RRCA+AND, -4B)
-- ravn/llvm-z80#57 — Comparison reversal: LD D,A; LD A,imm; CP D → CP imm (3B)
+- ravn/llvm-z80#57 — Comparison reversal peephole — **CLOSED** (-2B, post-RA)
 - ravn/llvm-z80#58 — JP where JR suffices / branch relaxation (3B)
 - ravn/llvm-z80#59 — 16-bit loop counter where 8-bit suffices — **FIXED** (-2B, comparison only)
 - ravn/llvm-z80#60 — Redundant LD A,reg when A unchanged (4B)
@@ -236,6 +236,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 | 2026-04-06 | 1910 | 1789 | -121 (-6.3%) | Fix #59: narrow 16-bit loop compare to 8-bit CP (-2B) |
 | 2026-04-06 | 1910 | 1785 | -125 (-6.5%) | Fix #56: SHL 7 via RRCA+AND (-4B) |
 | 2026-04-06 | 1910 | 1779 | -131 (-6.9%) | Fix #55: ADD HL,DE commutativity (-6B) |
+| 2026-04-06 | 1910 | 1777 | -133 (-7.0%) | Fix #57: comparison reversal peephole (-2B) |
 
 ## Todo: DMA-assisted screen scrolling
 
