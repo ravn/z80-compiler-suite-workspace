@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(z80-workspace C CXX)
+project(z80-workspace C)
 
 # Top-level CMakeLists.txt for CLion — indexing and navigation only.
 # Actual builds use Makefiles (autoload/bios) or ninja (llvm-z80).
