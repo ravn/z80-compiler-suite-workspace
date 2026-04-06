@@ -183,7 +183,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 - ravn/llvm-z80#52 — SPILL_GR16/RELOAD_GR16 reject Anyi16 — **FIXED** (widen pseudos + restrict superclass)
 - ravn/llvm-z80#53 — +static-stack allocates trivially-constant locals to BSS
 - ravn/llvm-z80#54 — Fall-through JP elimination (6B)
-- ravn/llvm-z80#55 — ADD HL,DE commutativity peephole (6B)
+- ravn/llvm-z80#55 — ADD HL,DE commutativity peephole — **CLOSED** (-6B)
 - ravn/llvm-z80#56 — Shift-left-7 strength reduction — **CLOSED** (RRCA+AND, -4B)
 - ravn/llvm-z80#57 — Comparison reversal: LD D,A; LD A,imm; CP D → CP imm (3B)
 - ravn/llvm-z80#58 — JP where JR suffices / branch relaxation (3B)
@@ -235,6 +235,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 | 2026-04-06 | 1910 | 1791 | -119 (-6.2%) | Gap analysis: 8 new issues (#54-#61), ~37B potential |
 | 2026-04-06 | 1910 | 1789 | -121 (-6.3%) | Fix #59: narrow 16-bit loop compare to 8-bit CP (-2B) |
 | 2026-04-06 | 1910 | 1785 | -125 (-6.5%) | Fix #56: SHL 7 via RRCA+AND (-4B) |
+| 2026-04-06 | 1910 | 1779 | -131 (-6.9%) | Fix #55: ADD HL,DE commutativity (-6B) |
 
 ## Todo: DMA-assisted screen scrolling
 
