@@ -404,3 +404,18 @@
 > investigate thoroughly if there are any z80 optimization techniques applicable to the prom that has not yet been looked into, and if there are any compiler issues that could help
 > there was a comment about fixing fastcall?
 > automatically investigate problems in session found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit
+> #59
+> can't the compiler guarantee that the counter is 8 bit?
+> (approved plan for ISel narrowing)
+> #56 - and consider "BIT 7" commands too
+> (implemented SHL 6-7 via RRCA+AND)
+> #55
+> (implemented ADD HL,DE commutativity peephole)
+> now do #61
+> (implemented in-memory INC/DEC (HL) peephole)
+> should #54 be fixed with inlining?
+> i did this in sdcc, by having a peep hole optimization that looked for jumps to a label immediately following it
+> (filed design note on #54, implemented #57 comparison reversal as post-RA peephole instead)
+> it appears that the rc700 cannot do 4kb proms at the moment so prom limit is 2kb for now.
+> todo later: I want a QR on the rc700 screen. This requires using semigraphic characters (the 2x3 blocks)
+> automatically investigate problems in session found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit

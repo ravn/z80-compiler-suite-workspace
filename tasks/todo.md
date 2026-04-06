@@ -266,6 +266,14 @@ Investigate using Am9517A memory-to-memory DMA for CONOUT screen scroll instead 
 - Wikipedia: https://en.wikipedia.org/wiki/Intel_8237
 - RC702 hardware reference: `RC702_HARDWARE_TECHNICAL_REFERENCE.md` in rc700-gensmedet
 
+## Todo: QR code on RC700 screen
+
+- Display a QR code on the RC700 CRT using semigraphic characters (2×3 block mosaic)
+- The RC700 character ROM includes semigraphic characters that divide each cell into a 2×3 grid of pixels
+- Each semigraphic character encodes 6 "pixels" per cell, giving ~160×72 effective resolution on 80×24
+- Need: QR code generator (C, must fit in PROM or CP/M .COM), semigraphic character mapping
+- This is a future/fun project, not priority
+
 ## Todo: z88dk
 
 - Add +cpmdisk support for RC700 to z88dk

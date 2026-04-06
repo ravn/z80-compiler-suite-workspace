@@ -24,6 +24,32 @@ All findings verified against actual bytes in the listing.
 
 **Total potential: ~37 bytes** → would bring PROM to ~1754B.
 
+## Fixes Implemented This Session
+
+| Issue | Title | Actual Savings | Commit |
+|-------|-------|----------------|--------|
+| #59 | Narrow 16-bit loop compare to 8-bit CP | -2B | 0387305 |
+| #56 | SHL 6-7 via RRCA+AND | -4B | cc9a945 |
+| #55 | ADD HL,DE commutativity peephole | -6B | cb159c6 |
+| #57 | Comparison reversal (post-RA peephole) | -2B | 5fb29f0 |
+| #61 | In-memory DEC (HL) / INC (HL) | -6B | 511ace7 |
+
+**Total actual: -20B** (1791B → 1771B). Estimates vs actuals:
+- #59 estimated 6B, got 2B (comparison only, not counter narrowing — filed #62)
+- #56 estimated 5B, got 4B (SHL 7 only instance, no SHL 6)
+- #55 estimated 6B, got 6B (exact match)
+- #57 estimated 3B, got 2B (branch flip is same size)
+- #61 estimated 4B, got 6B (OR A removal added +1B per DEC instance)
+
+## Issues Not Yet Fixed
+
+| Issue | Title | Est. | Status |
+|-------|-------|------|--------|
+| #54 | Fall-through JP elimination | 6B | Design note filed — needs cross-function analysis |
+| #58 | JP→JR branch relaxation | 3B | Open |
+| #60 | Redundant LD A,reg when A unchanged | 4B | Open |
+| #62 | IV narrowing (counter register pair) | 4B | Open — follow-up to #59 |
+
 ## Previously Known Issues (still applicable to PROM)
 
 | Issue | Title | Est. Impact |
