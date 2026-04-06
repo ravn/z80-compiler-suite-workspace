@@ -62,7 +62,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 - [x] Interleaved C source in clang listing (make clang_src_lis)
 
 - [ ] Investigate `clang -Weverything -c` on PROM sources
-- [ ] Experiment with HI-Tech C to see how well it does
+- [x] ~~Experiment with HI-Tech C~~ — parked, not pursuing
 
 ## Remaining (prioritized)
 
@@ -126,7 +126,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 - [ ] Investigate if compare_6bytes could use CPI for more compact codegen
 - [ ] Legacy boot reads to INTVEC_ADDR (0x7000) — assumes exactly 0x7000 bytes from disk. May be a latent bug if disk content differs
 - [ ] Investigate `clang -Weverything -c` on PROM sources
-- [ ] Experiment with HI-Tech C to see how well it does
+- [x] ~~Experiment with HI-Tech C~~ — parked, not pursuing
 - [ ] Per-pair 16-bit copy cost in register allocator (ravn/llvm-z80#27)
 - [ ] Tail call blocked by PUSH in IY copy (prom1_if_present: PUSH DE; POP IY;
   CALL __call_iy; RET — HasPush check falsely blocks, 1B)
@@ -182,6 +182,14 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 - ravn/llvm-z80#51 — Boot banner missing (BSS self-clobber) — **FIXED** (asm BSS clear in boot_entry.c)
 - ravn/llvm-z80#52 — SPILL_GR16/RELOAD_GR16 reject Anyi16 — **FIXED** (widen pseudos + restrict superclass)
 - ravn/llvm-z80#53 — +static-stack allocates trivially-constant locals to BSS
+- ravn/llvm-z80#54 — Fall-through JP elimination (6B)
+- ravn/llvm-z80#55 — ADD HL,DE commutativity peephole (6B)
+- ravn/llvm-z80#56 — Shift-left-7 strength reduction (5B)
+- ravn/llvm-z80#57 — Comparison reversal: LD D,A; LD A,imm; CP D → CP imm (3B)
+- ravn/llvm-z80#58 — JP where JR suffices / branch relaxation (3B)
+- ravn/llvm-z80#59 — 16-bit loop counter where 8-bit suffices (6B)
+- ravn/llvm-z80#60 — Redundant LD A,reg when A unchanged (4B)
+- ravn/llvm-z80#61 — Missing DEC (HL) / INC (HL) for in-memory ops (4B)
 
 ## Parked (investigated, not worth pursuing now)
 
@@ -224,6 +232,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 | 2026-04-02 | 1910 | 1842 | -68 (-3.6%) | CLion integration: __z80__ guards, MAME run configs |
 | 2026-04-03 | 1910 | 1802 | -108 (-5.7%) | Native macOS build, delay_ms(), -Oz, dead code GC |
 | 2026-04-03 | 1910 | 1791 | -119 (-6.2%) | Static inlining: fdc_seek, display_banner_and_start_crt |
+| 2026-04-06 | 1910 | 1791 | -119 (-6.2%) | Gap analysis: 8 new issues (#54-#61), ~37B potential |
 
 ## Todo: DMA-assisted screen scrolling
 

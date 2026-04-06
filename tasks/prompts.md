@@ -396,3 +396,11 @@
 > (BIOS RTS drain-to-empty: 5300→59 CTS drops per transfer)
 > (BIOS-only hex via MLOAD+BDOSCCP.COM workflow, 363 records ~24s)
 > (macOS FTDI tcdrain broken, Linux works)
+
+## 2026-04-06 (session 11)
+
+> i have moved bios development to another machine.   I would like to investigate the autoprom further here.
+> park the hi-tech c comparison
+> investigate thoroughly if there are any z80 optimization techniques applicable to the prom that has not yet been looked into, and if there are any compiler issues that could help
+> there was a comment about fixing fastcall?
+> automatically investigate problems in session found creating tasks and issues as necesary.  summarize your work and findings in the project, and commit
