@@ -189,7 +189,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 - ravn/llvm-z80#58 — JP where JR suffices / branch relaxation (3B)
 - ravn/llvm-z80#59 — 16-bit loop counter where 8-bit suffices — **FIXED** (-2B, comparison only)
 - ravn/llvm-z80#60 — Redundant LD A,reg when A unchanged (4B)
-- ravn/llvm-z80#61 — Missing DEC (HL) / INC (HL) for in-memory ops (4B)
+- ravn/llvm-z80#61 — In-memory DEC (HL) / INC (HL) peephole — **CLOSED** (-6B)
 
 ## Parked (investigated, not worth pursuing now)
 
@@ -237,6 +237,7 @@ SDCC: 1910B | Clang: 1853B | Clang is 57B smaller (-3.0%)
 | 2026-04-06 | 1910 | 1785 | -125 (-6.5%) | Fix #56: SHL 7 via RRCA+AND (-4B) |
 | 2026-04-06 | 1910 | 1779 | -131 (-6.9%) | Fix #55: ADD HL,DE commutativity (-6B) |
 | 2026-04-06 | 1910 | 1777 | -133 (-7.0%) | Fix #57: comparison reversal peephole (-2B) |
+| 2026-04-06 | 1910 | 1771 | -139 (-7.3%) | Fix #61: in-memory INC/DEC (HL) peephole (-6B) |
 
 ## Todo: DMA-assisted screen scrolling
 
