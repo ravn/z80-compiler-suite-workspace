@@ -416,6 +416,20 @@ Investigate using Am9517A memory-to-memory DMA for CONOUT screen scroll instead 
 - Wikipedia: https://en.wikipedia.org/wiki/Intel_8237
 - RC702 hardware reference: `RC702_HARDWARE_TECHNICAL_REFERENCE.md` in rc700-gensmedet
 
+## Todo: Unified BIOS source across compilers
+
+- Currently bios.c and other BIOS sources have several `#ifdef __clang__`
+  / `#ifdef __SDCC` blocks for things like:
+    - sio_wr5/sio_rd1 (clang uses port_out_rt, SDCC uses noinline split)
+    - relocate_bios memcpy (clang uses __builtin_memcpy)
+    - ISR helpers (clang uses bios_shims.s wrappers, SDCC uses inline asm)
+- Goal: keep bios.c, bios_hw_init.c, boot_entry.c as pure portable C with
+  no per-compiler `#ifdef`. Move all compiler-specific differences into
+  per-compiler files (e.g., clang/bios_compat.h, sdcc/bios_compat.h)
+  loaded via `-include` or via the Makefile.
+- Builds on the "unified port I/O API" todo.
+- Future work, not priority
+
 ## Todo: Inline ISR routines in clang to avoid wrapper CALL overhead
 
 - Currently clang ISRs use a wrapper function (e.g., `isr_crt_wrapper`)
