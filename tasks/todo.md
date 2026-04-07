@@ -281,6 +281,17 @@ Investigate using Am9517A memory-to-memory DMA for CONOUT screen scroll instead 
 - Wikipedia: https://en.wikipedia.org/wiki/Intel_8237
 - RC702 hardware reference: `RC702_HARDWARE_TECHNICAL_REFERENCE.md` in rc700-gensmedet
 
+## Todo: Comprehensive BIOS test suite via MAME
+
+- Build a comprehensive test case exercising all CP/M BIOS jump table
+  entries (BOOT, WBOOT, CONST, CONIN, CONOUT, LIST, PUNCH, READER, HOME,
+  SELDSK, SETTRK, SETSEC, SETDMA, READ, WRITE, LISTST, SECTRAN)
+- Run automated via MAME with deterministic assertions on results
+- Cover edge cases: disk sector wrap, multi-track operations, console
+  control characters, status polling
+- Ideally generates pass/fail report like the autoload-in-c MAME boot test
+- Future work, not priority
+
 ## Todo: PROM legacy ID-COMAL disk support
 
 - Make the PROM work with legacy id-comal disks
