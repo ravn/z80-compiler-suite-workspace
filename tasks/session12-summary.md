@@ -41,7 +41,7 @@ Lit tests: 51/51 PASS, MAME boot PASS
 | `relocate_bios()` rewritten | Pure C, no inline asm. Clear BSS first. Use `__builtin_memcpy` for clang. |
 | `sio_wr5/rd1` per-compiler | clang merges via `port_out_rt` (-14B), SDCC keeps noinline split |
 | `port_in_rt`/`port_out_rt` macros in hal.h | Runtime port I/O, clang only |
-| `bios_const`/`bios_conin` dual-poll | Polls BOTH keyboard AND serial regardless of IOBYTE — local user can type while remote driver also sends via serial. +10B in BIOS. |
+| `bios_const`/`bios_conin`/`bios_conout` UC1 joined mode | New mode IOB_UC1=3: keyboard AND serial both work simultaneously. TTY=serial only, CRT=keyboard only, BAT=serial (CP/M batch), UC1=joined. UC1 is the new default (IOBYTE_DEFAULT=0x97) so local keyboard + remote serial both work out of the box. clang BIOS +15B, SDCC BIOS +53B. |
 
 ## New Test Infrastructure
 
