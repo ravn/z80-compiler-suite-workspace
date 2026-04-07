@@ -310,15 +310,58 @@ Investigate using Am9517A memory-to-memory DMA for CONOUT screen scroll instead 
   - Requires ch0+ch1 free during scroll (no concurrent disk I/O — safe in CONOUT)
   - Less benefit than hardware scroll but simpler to implement
 
-## Todo: Clang vs SDCC size gap analysis (BIOS)
+## BIOS size gap analysis (session 12, 2026-04-06/07)
 
-Clang 5746B vs SDCC 5577B (+169B, +3.0%). Investigate thoroughly:
-- Generate side-by-side function size comparison (nm output)
-- For each function where clang is larger, identify the root cause
-- Map each gap to a specific compiler construction (register allocation,
-  instruction selection, peephole, calling convention, etc.)
-- File individual issues in ravn/llvm-z80 for each addressable gap
-- Priority: largest gaps first (likely bios_conout_c, fdc_read_data)
+**Clang 5861B vs SDCC 5797B (+64B, +1.1%)**
+Started at 5952B (+155B, +2.7%). Reduced by 91B through compiler + source fixes.
+
+### Current per-function gap (post-fixes)
+
+Clang larger (+395B total across these functions):
+
+| Function | Clang | SDCC | Gap | Root cause |
+|---|---|---|---|---|
+| sec_rw | 287 | 115 | **+172** | BSS round-trips, struct access, 16-bit on 8-bit |
+| bg_clear_from | 279 | 209 | **+70** | BSS round-tripping, register allocation |
+| rwoper | 262 | 203 | **+59** | Duplicated sector-offset calc, BSS round-trip |
+| bios_list_body | 70 | 33 | **+37** | |
+| bios_conin | 90 | 73 | +17 | |
+| bios_const | 42 | 28 | +14 | |
+
+Clang smaller (-164B total): terminal group (-44), bios_hw_init (-42),
+isr_pio_kbd (-23), isr_sio_a_rx (-23), isr_crt (-16), bios_seldsk_c (-10).
+
+### Compiler fixes applied in session 12
+
+| # | Fix | Savings |
+|---|-----|---------|
+| 62 | Constant fold G_PTR_ADD(GV, const) → LD rr,sym+off | -12B |
+| 63 | SUB/AND/OR/XOR (HL) memory operand fusion | -15B |
+| 64 | INC/DEC (HL) peephole: handle RET + fallthrough | -3B |
+| 65a | DJNZ peephole: DEC A; LD B,A; [OR A;] JR NZ | -0B (no eligible BIOS loops) |
+| 65b | G_UADDO/G_USUBO legal for i8 (prevent 8→16 widening) | -0B (BIOS loops use explicit cmp) |
+| 68 | Prefer cascaded branches over jump tables for ≤7 cases | **-46B** |
+
+### Source-level fixes applied in session 12
+
+| Change | Savings |
+|--------|---------|
+| `cursorxy()` → static inline (11 call sites) | -11B |
+| `hstsec`, `sekhst` word → byte | -3B |
+| `serial_conout` timeout word → byte | -1B |
+| `fdc_result` loop → pointer-based countdown | -0B |
+
+### Remaining open issues
+
+| # | Issue | Est. impact | Notes |
+|---|-------|-------------|-------|
+| 66 | BSS static-stack SP-relative access | ~30B | Should use direct LD (addr) not LD HL,N; ADD HL,SP |
+| 67 | sec_rw 2.5x SDCC | ~50B | Compound of BSS reloads, missing idioms, regalloc |
+| — | Register allocation pressure | ~30B | Clang spills more conservatively than SDCC |
+
+The remaining 64B gap is dominated by sec_rw (+172B) which is partially
+offset by clang wins elsewhere (-164B). Fixing #66 (BSS reloads) would
+close most of the remaining gap.
 
 ## Todo: CLion debugger via MAME gdbstub
 
@@ -585,6 +628,33 @@ See: rcbios-in-c/tasks/26-line-status.md
 
 ## Future / Fun
 
+- [ ] Fast storage peripheral for RC700 — two approaches under investigation
+
+  **Option A: Parallel port (PIO-A, DB-25) — simpler, no internal mods**
+  - Z80 PIO byte mode: 8 data bits + hardware handshake (ASTB/ARDY), ~100-200 KB/s
+  - Needs 5V-capable MCU (or Pico + 74HCT245/74LVC245 level shifters)
+  - Protocol: command byte → LBA address → 128-byte sector transfer, PIO handshake paces each byte
+  - MCU provides SD card storage, responds to READ_SECTOR/WRITE_SECTOR commands
+  - CP/M side: custom block driver replacing or supplementing FDC
+  - Reference projects:
+    - **ParPortProp** (N8VEM/RetroBrew) — Propeller on Z80 PIO, provides SD+serial+keyboard
+    - **Amstrad Symbiface** — external peripheral via PIO, IDE/CF storage
+    - **Commodore sd2iec** — excellent command/response protocol design over parallel-like bus
+    - **PC parallel ZIP/Jaz** (EPST/Shuttle protocol) — multiplexing over limited parallel interface
+  - Hardware candidates: Pico + level shifters ($10 BOM), STM32F103 Blue Pill (5V tolerant inputs), Arduino Mega (native 5V)
+
+  **Option B: Z80 bus via J8 connector — faster, full bus access**
+  - J8 exposes complete Z80 bus (address, data, control signals)
+  - Needs 5V-capable device responding within Z80 bus timing (IORQ/MREQ, WAIT)
+  - Could appear as native I/O-mapped device, no PIO overhead
+  - Reference projects:
+    - **RC2014 CompactFlash** — CF in IDE mode, direct I/O port access (simplest)
+    - **Z80-MBC2** — ATmega32A on Z80 bus with active WAIT generation, SD storage
+    - **PropIO v2** — Propeller on bus, 5V tolerant, 8 cogs handle timing without WAIT
+    - **RomWBW** — CP/M BIOS framework with drivers for IDE/CF/SD/PropIO
+    - **NABU-LIB/CloudCP/M** — RP2040 on Z80 bus via 74LVC245 transceivers, PIO state machines
+    - **Teensy-Z80** designs — Teensy + bus transceivers monitoring IORQ/RD/WR
+  - Hardware candidates: FPGA (iCE40 + level shifters), RP2040 + bus transceiver, 5V-tolerant MCU
 - [ ] QR code generator using semi-graphics (block characters for Z80 terminal output)
 - [ ] Initialize custom character generator ROM (SEM702) from BIOS
   - Character generator defined in roa375/PHE358A.MAC
