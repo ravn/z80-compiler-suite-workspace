@@ -126,6 +126,8 @@ Tested and working in both compilers:
 - Never apologize. Be concise and accurate.
 - Enter plan mode for non-trivial tasks. Re-plan if things go sideways.
 - Verify changes work (tests, MAME boot) before marking done.
+- **Whenever you modify the compiler, always add a lit test showing it works.**
+  Add to existing relevant test file or create a new one in `llvm/test/CodeGen/Z80/`.
 
 ## Known Bugs in llvm-z80
 
