@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Optimize the Z80 backend of ravn/llvm-z80 (a GlobalISel-based LLVM fork) to match or beat SDCC code density. Test against RC700 PROM and BIOS sources in rc700-gensmedet.
 
-Current: Clang 1756 bytes vs SDCC 1910 bytes (-8.1%) for the autoload PROM. BIOS: Clang 5832B vs SDCC 5797B (+35B, +0.6%). (IX/IY reverted to reserved — allocation was incomplete, #38.)
+Current: Clang 1756 bytes vs SDCC 1910 bytes (-8.1%) for the autoload PROM. BIOS: Clang 5826B vs SDCC 5797B (+29B, +0.5%). (IX/IY reverted to reserved — allocation was incomplete, #38.)
 
-Session #12: PROM fixes #58 (JP→JR branch shortening, -4B) + #60 peephole + cross-block OR A removal + #62 dead HL copy (-4B), PROM 1771→1756B. BIOS fixes #62-#68 (7 compiler fixes, 4 source fixes), BIOS 5952→5832B (-120B); jump table threshold raised to 8 (-46B); G_UADDO/G_USUBO legal for i8; #66 redundant BSS reloads (-18B); #62 dead HL copy (-8B). Native macOS build replaces Docker for compilation.
+Session #12: PROM fixes #58 (JP→JR), #60 peephole, cross-block OR A, #62 dead HL copy, LD (nn),A→LD (HL),A peephole — PROM 1771→1756B (-15B). BIOS fixes #62-#68 (7 compiler fixes), DJNZ peephole, #66 BSS reload fix, #53 relocate_bios rewrite (clean C with __builtin_memcpy + BSS-clear-first ordering), check_no_bss_in_relocate.py test — BIOS 5952→5826B (-126B). Native macOS build replaces Docker for compilation.
 
 ## Workspace Layout (`/Users/ravn/z80/`)
 
