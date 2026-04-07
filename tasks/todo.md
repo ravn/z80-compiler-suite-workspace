@@ -281,6 +281,13 @@ Investigate using Am9517A memory-to-memory DMA for CONOUT screen scroll instead 
 - Wikipedia: https://en.wikipedia.org/wiki/Intel_8237
 - RC702 hardware reference: `RC702_HARDWARE_TECHNICAL_REFERENCE.md` in rc700-gensmedet
 
+## Todo: PROM legacy ID-COMAL disk support
+
+- Make the PROM work with legacy id-comal disks
+- Need to investigate the id-comal disk format and what changes are needed
+  in fdc_detect_sector_size_and_density / disk format tables
+- Future work, not priority
+
 ## Todo: QR code on RC700 screen
 
 - Display a QR code on the RC700 CRT using semigraphic characters (2×3 block mosaic)

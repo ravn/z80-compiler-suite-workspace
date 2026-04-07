@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Optimize the Z80 backend of ravn/llvm-z80 (a GlobalISel-based LLVM fork) to match or beat SDCC code density. Test against RC700 PROM and BIOS sources in rc700-gensmedet.
 
-Current: Clang 1767 bytes vs SDCC 1910 bytes (-7.5%) for the autoload PROM. BIOS: Clang 5843B vs SDCC 5797B (+46B, +0.8%). (IX/IY reverted to reserved — allocation was incomplete, #38.)
+Current: Clang 1756 bytes vs SDCC 1910 bytes (-8.1%) for the autoload PROM. BIOS: Clang 5832B vs SDCC 5797B (+35B, +0.6%). (IX/IY reverted to reserved — allocation was incomplete, #38.)
 
-Session #12: PROM fixes #58 (JP→JR branch shortening, -4B) + #60 peephole (0B in PROM — cross-block), PROM 1771→1767B. BIOS fixes #62-#68 (7 compiler fixes, 4 source fixes), BIOS 5952→5861B (-91B); jump table threshold raised to 8 (-46B alone); G_UADDO/G_USUBO legal for i8. Issue #66 (redundant BSS reloads) brought BIOS 5861→5843B. Native macOS build replaces Docker for compilation.
+Session #12: PROM fixes #58 (JP→JR branch shortening, -4B) + #60 peephole + cross-block OR A removal + #62 dead HL copy (-4B), PROM 1771→1756B. BIOS fixes #62-#68 (7 compiler fixes, 4 source fixes), BIOS 5952→5832B (-120B); jump table threshold raised to 8 (-46B); G_UADDO/G_USUBO legal for i8; #66 redundant BSS reloads (-18B); #62 dead HL copy (-8B). Native macOS build replaces Docker for compilation.
 
 ## Workspace Layout (`/Users/ravn/z80/`)
 
@@ -126,6 +126,8 @@ Tested and working in both compilers:
 - Never apologize. Be concise and accurate.
 - Enter plan mode for non-trivial tasks. Re-plan if things go sideways.
 - Verify changes work (tests, MAME boot) before marking done.
+- **Whenever you modify the compiler, always add a lit test showing it works.**
+  Add to existing relevant test file or create a new one in `llvm/test/CodeGen/Z80/`.
 
 ## Known Bugs in llvm-z80
 
