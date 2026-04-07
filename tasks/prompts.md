@@ -1,5 +1,24 @@
 # Prompts
 
+## 2026-04-06 (session 12)
+
+> #60
+> #58
+> i dont want to use the docker build anymore now i have a native build
+> please rebuild the debug build
+> now what?
+> #7
+> please investigate if the conout path can be improved
+> no it was a mistake. now what?
+> automatically investigate problems in session found creating tasks and issues as necessary. summarize your work and findings in the project, and commit
+> fix redundant or a
+> what now?
+> I want the prom to optionally show a qr code in line 4 onwards (QR investigation — see tasks/qr-code-investigation.md)
+> fact: I only have SDL2 available
+> the rc700 emulator is present at ~/git/rc700 you may try that
+> it looks like the screen is fed by two different dma channels in turn. I want to change that.
+> drop the qr code for now, but put your findings in the project
+
 ## 2026-03-31 (session 4)
 
 > open a new branch and investigate #37
