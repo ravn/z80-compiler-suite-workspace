@@ -3,6 +3,19 @@
 ## Status: IX/IY reverted to reserved — CLANG BEATS SDCC
 
 SDCC: 1910B | Clang: 1767B | Clang is 143B smaller (-7.5%)
+BIOS: SDCC 5797B | Clang 5843B (+46B, +0.8% — was +64B before #66 fix)
+
+## Session 13 (issue #66 — redundant BSS reloads, -18B BIOS)
+
+Two waste patterns eliminated in `Z80LateOptimization.cpp`:
+1. New peephole collapses `LD A,r ; PUSH AF ; LD A,r ; LD (addr),A ; POP AF`
+   into `LD A,r ; LD (addr),A` (4 instances × 3B = 12B).
+2. BSS load forwarding extended from MCSymbol-only to also track GlobalValue
+   operands (C globals), with volatile-access guard. Eliminates store-then-
+   reload of globals (2 instances × 3B = 6B).
+
+Verified: 49/49 lit tests pass; BIOS shrinks 5861→5843B exactly as predicted;
+no PROM regression. Submodule SHA bumped in superproject.
 
 ## Completed
 
@@ -355,13 +368,12 @@ isr_pio_kbd (-23), isr_sio_a_rx (-23), isr_crt (-16), bios_seldsk_c (-10).
 
 | # | Issue | Est. impact | Notes |
 |---|-------|-------------|-------|
-| 66 | BSS static-stack SP-relative access | ~30B | Should use direct LD (addr) not LD HL,N; ADD HL,SP |
+| ~~66~~ | ~~BSS static-stack SP-relative access~~ | ~~~30B~~ | **FIXED** session 12: SP-relative pattern + redundant PUSH AF/POP AF + global store-reload forwarding. BIOS 5861→5843B (-18B). |
 | 67 | sec_rw 2.5x SDCC | ~50B | Compound of BSS reloads, missing idioms, regalloc |
 | — | Register allocation pressure | ~30B | Clang spills more conservatively than SDCC |
 
-The remaining 64B gap is dominated by sec_rw (+172B) which is partially
-offset by clang wins elsewhere (-164B). Fixing #66 (BSS reloads) would
-close most of the remaining gap.
+The remaining 46B gap is now dominated by sec_rw (+172B) partially offset
+by clang wins elsewhere (-164B − the -18B from #66).
 
 ## Todo: CLion debugger via MAME gdbstub
 
