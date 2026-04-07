@@ -281,6 +281,21 @@ Investigate using Am9517A memory-to-memory DMA for CONOUT screen scroll instead 
 - Wikipedia: https://en.wikipedia.org/wiki/Intel_8237
 - RC702 hardware reference: `RC702_HARDWARE_TECHNICAL_REFERENCE.md` in rc700-gensmedet
 
+## Todo: Unified port I/O API across compilers
+
+- Currently port I/O for runtime addresses works only in clang (via
+  the `__io` address_space(2) mechanism + #44 fix → OUT (C),A).
+- SDCC has no clean pure-C way to do runtime port I/O — `__sfr` requires
+  constant addresses. Inline asm helpers can't be `static inline __naked`
+  without SDCC pasting the `ret` and breaking the caller (cf. session 12
+  bug in sio_wr5).
+- Code that needs runtime port selection (e.g., sio_wr5 picking SIO
+  channel A or B) currently needs `#ifdef __clang__` per-compiler paths.
+- Goal: design a `port_in_rt(p)` / `port_out_rt(p, v)` abstraction that
+  works in both compilers in pure C, OR settle on a portable inline asm
+  pattern that doesn't trip the SDCC inliner.
+- Future work, not priority
+
 ## Todo: Comprehensive BIOS test suite via MAME
 
 - Build a comprehensive test case exercising all CP/M BIOS jump table
