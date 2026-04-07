@@ -41,6 +41,7 @@ Lit tests: 51/51 PASS, MAME boot PASS
 | `relocate_bios()` rewritten | Pure C, no inline asm. Clear BSS first. Use `__builtin_memcpy` for clang. |
 | `sio_wr5/rd1` per-compiler | clang merges via `port_out_rt` (-14B), SDCC keeps noinline split |
 | `port_in_rt`/`port_out_rt` macros in hal.h | Runtime port I/O, clang only |
+| `bios_const`/`bios_conin` dual-poll | Polls BOTH keyboard AND serial regardless of IOBYTE — local user can type while remote driver also sends via serial. +10B in BIOS. |
 
 ## New Test Infrastructure
 
