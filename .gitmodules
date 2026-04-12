@@ -10,3 +10,8 @@
 	path = z88dk
 	url = git@github.com:ravn/z88dk.git
 	branch = master
+[submodule "mame"]
+	path = mame
+	url = git@github.com:ravn/mame.git
+	branch = master
+	shallow = true
