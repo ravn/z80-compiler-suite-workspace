@@ -14,3 +14,7 @@ The idea is to have lots of code compiled by all compilers, and then examine the
 This is my first adventure with AI-assisted programming, so it is learning while doing.
 
 /ravn 2026-03-28
+
+Claude can now fully remote control MAME similar to a physical RC700 including the reset button.   In-vitro bios update is simulated, and a sdcc bios is replaced wih a clang bios. 
+
+/ravn 2026-04-12
